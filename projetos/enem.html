@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Banco de Questões ENEM</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Tokens (claro / escuro) ===== */
+:root{--bg:#e9edf3;--card:#fff;--ink:#14213d;--muted:#5a6a85;--line:#cfd7e3;--blue:#0a2f6b;--blue2:#1c4a9c;--gold:#f2b705;--goldsoft:#fff6d6;--ok:#17703a;--oksoft:#e2f5ea;--bad:#a8281f;--badsoft:#fde9e7;--onblue:#fff;
+ --sans:"Source Sans 3",system-ui,sans-serif;--serif:"Source Serif 4",Georgia,serif;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1522;--card:#172236;--ink:#e8edf5;--muted:#9fb0cc;--line:#2c3b57;--blue:#0a2f6b;--blue2:#7fa6ee;--goldsoft:#3a3210;--oksoft:#12301f;--badsoft:#3a1714;--ok:#6fd49a;--bad:#ff9a92;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1522;--card:#172236;--ink:#e8edf5;--muted:#9fb0cc;--line:#2c3b57;--blue2:#7fa6ee;--goldsoft:#3a3210;--oksoft:#12301f;--badsoft:#3a1714;--ok:#6fd49a;--bad:#ff9a92;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--blue);z-index:10}
+button,input{font:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* ===== Cabeçalho institucional ===== */
+header{background:var(--blue);color:var(--onblue);border-bottom:6px solid var(--gold)}
+.hd{max-width:920px;margin:0 auto;padding:16px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.hd h1{margin:0;font:600 1.35rem/1.2 var(--serif)}
+.hd p{margin:2px 0 0;font-size:.9rem;opacity:.85}
+.caderno{border:2px solid var(--gold);color:var(--gold);padding:4px 12px;font-weight:700;border-radius:3px;white-space:nowrap}
+main{max-width:920px;margin:0 auto;padding:20px}
+footer{max-width:920px;margin:0 auto;padding:8px 20px 28px;color:var(--muted);font-size:.85rem}
+
+/* ===== Cards e formulários ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:22px;margin-bottom:18px}
+.card h2{margin:0 0 4px;font:600 1.2rem var(--serif)}
+.hint{color:var(--muted);font-size:.92rem;margin:0 0 12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:4px;cursor:pointer;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip:hover{border-color:var(--blue2)}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+input[type=number]{width:110px;padding:8px 10px;border:1.5px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink)}
+.modo{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.modo button{text-align:left;padding:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:4px;cursor:pointer}
+.modo button[aria-pressed="true"]{border-color:var(--gold);background:var(--goldsoft);box-shadow:inset 4px 0 0 var(--gold)}
+.modo b{display:block}.modo span{color:var(--muted);font-size:.9rem}
+.btn{border:0;border-radius:4px;padding:12px 22px;font-weight:700;cursor:pointer;background:var(--blue);color:#fff}
+.btn.gold{background:var(--gold);color:#14213d;font-size:1.1rem;padding:15px 32px}
+.btn.ghost{background:transparent;color:var(--blue2);border:1.5px solid var(--blue2)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.disp{font-weight:700;color:var(--blue2)}
+.aviso{color:var(--bad);font-weight:600;min-height:1.4em;margin:8px 0 0}
+
+/* ===== Simulado ===== */
+.mat{border:1.5px solid var(--line);border-radius:5px;margin-bottom:8px;background:var(--card)}
+.mat.on{border-color:var(--gold);box-shadow:inset 4px 0 0 var(--gold)}
+.mat-h{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:4px 10px}
+.mat-t{flex:1;min-width:200px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;text-align:left;background:none;border:0;color:var(--ink);cursor:pointer;padding:10px 0;font-size:1.05rem}
+.mat-t .n{color:var(--muted);font-size:.85rem}
+.mat-c{padding:4px 12px 14px 34px}
+.prog{display:flex;justify-content:space-between;font-weight:700;margin-bottom:6px}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:var(--gold);width:0;transition:width .25s}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.meta{color:var(--muted);font-size:.88rem;margin-bottom:10px}
+.texto{font:400 1.05rem/1.7 var(--serif);border-left:5px solid var(--gold);background:var(--bg);padding:14px 18px;margin:0 0 16px;max-width:70ch}
+.enun{font:600 1.1rem/1.65 var(--serif);margin:0 0 16px;max-width:70ch}
+.alts{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.alt{width:100%;display:flex;gap:12px;text-align:left;padding:12px 14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:5px;cursor:pointer;font:400 1.02rem/1.5 var(--serif)}
+.alt:hover:not(:disabled){border-color:var(--blue2)}
+.alt .l{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--muted);display:grid;place-items:center;font:700 .9rem var(--sans)}
+.alt.sel{border-color:var(--blue2);background:var(--goldsoft)}
+.alt.sel .l{background:var(--blue);color:#fff;border-color:var(--blue)}
+.alt.ok{border-color:var(--ok);background:var(--oksoft)}.alt.ok .l{background:var(--ok);color:#fff;border-color:var(--ok)}
+.alt.bad{border-color:var(--bad);background:var(--badsoft)}.alt.bad .l{background:var(--bad);color:#fff;border-color:var(--bad)}
+.alt:disabled{cursor:default}
+.expl{margin-top:16px;padding:14px 16px;border-radius:5px;background:var(--goldsoft);border-left:5px solid var(--gold);max-width:70ch}
+.nav{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:22px}
+.nav .grp{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ===== Resultado ===== */
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0 20px}
+.stat{border:1px solid var(--line);border-radius:5px;padding:14px;text-align:center}
+.stat b{display:block;font:600 2rem/1.1 var(--serif)}
+.stat.pct{background:var(--blue);color:#fff;border-color:var(--blue)}
+.stat.pct b{color:var(--gold)}
+.item{border:1px solid var(--line);border-radius:6px;padding:16px;margin-bottom:14px;background:var(--card)}
+.badge{display:inline-block;padding:2px 10px;border-radius:3px;font-weight:700;font-size:.85rem}
+.badge.ok{background:var(--oksoft);color:var(--ok)}.badge.bad{background:var(--badsoft);color:var(--bad)}
+.item p{margin:8px 0}
+[hidden]{display:none!important}
+.hd-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tema{border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;padding:5px 12px;border-radius:3px;font-weight:600;cursor:pointer;min-height:36px;white-space:nowrap}
+.tema:hover{background:rgba(255,255,255,.15)}
+html{-webkit-text-size-adjust:100%}
+body{overflow-wrap:anywhere}
+:root[data-theme="dark"] .alt.ok .l,:root[data-theme="dark"] .alt.bad .l{color:#0e1522}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alt.ok .l,:root:not([data-theme="light"]) .alt.bad .l{color:#0e1522}}
+.chip,.btn,.alt,.mat-t,.modo button{min-height:44px}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+@media (max-width:640px){
+ body{font-size:16px}
+ main{padding:12px}
+ .card{padding:16px}
+ .hd{padding:12px 14px}
+ .hd h1{font-size:1.1rem}
+ .hd p{font-size:.8rem}
+ .mat-c{padding:4px 10px 12px}
+ .enun{font-size:1.02rem}
+ .texto{padding:12px 14px;font-size:1rem}
+ .alt{padding:10px 12px;font-size:1rem}
+ .nav{flex-direction:column-reverse}
+ .nav .grp,.nav .btn{width:100%}
+ .nav .grp .btn{flex:1}
+ .btn.gold{width:100%}
+ input[type=number]{width:100%;min-height:44px;font-size:16px}
+ .row label{width:100%}
+}
+@media (min-width:1100px){main,.hd,footer{max-width:1000px}}
+</style>
+</head>
+<body>
+<header><div class="hd">
+  <div><h1>Banco de Questões · ENEM</h1><p>Exame Nacional do Ensino Médio · simulados por área e assunto</p></div>
+  <div class="hd-r"><button type="button" id="tema" class="tema" aria-label="Alternar tema"></button><span class="caderno">CADERNO AZUL</span></div>
+</div></header>
+
+<main>
+  <!-- TELA 1: filtros -->
+  <section id="tela-filtros">
+    <div class="card"><h2>Matérias e tópicos</h2><p class="hint">Toque na matéria para ver os tópicos. Sem seleção, todas entram no simulado.</p><div id="f-materias"></div></div>
+    
+    <div class="card"><h2>Quantidade de questões</h2>
+      <div class="chips" id="f-qtd"></div>
+      <div class="row"><label for="qtd-custom">Outra quantidade:</label><input id="qtd-custom" type="number" min="1" inputmode="numeric" placeholder="ex.: 15"></div>
+      <p class="hint" style="margin-top:10px"><span class="disp" id="disp">0</span> questões disponíveis com estes filtros.</p>
+    </div>
+    <div class="card"><h2>Tipo de simulado</h2>
+      <div class="modo" id="f-modo">
+        <button type="button" data-m="treino" aria-pressed="true"><b>Modo Treino</b><span>Gabarito e explicação logo após cada resposta.</span></button>
+        <button type="button" data-m="prova" aria-pressed="false"><b>Modo Prova</b><span>Resultado e gabarito só ao finalizar.</span></button>
+      </div>
+    </div>
+    <button class="btn gold" id="btn-iniciar" type="button">Iniciar Simulado</button>
+    <p class="aviso" id="aviso" role="alert"></p>
+  </section>
+
+  <!-- TELA 2: simulado -->
+  <section id="tela-prova" hidden>
+    <div class="prog"><span id="p-label"></span><span id="p-modo"></span></div>
+    <div class="bar" aria-hidden="true"><i id="p-bar"></i></div>
+    <article class="card" id="questao"></article>
+    <div class="nav">
+      <button class="btn ghost" id="b-ant" type="button">Anterior</button>
+      <div class="grp">
+        <button class="btn" id="b-prox" type="button">Próxima</button>
+        <button class="btn gold" id="b-fim" type="button" style="font-size:1rem;padding:12px 22px">Finalizar Simulado</button>
+      </div>
+    </div>
+    <p class="aviso" id="aviso2" role="alert"></p>
+  </section>
+
+  <!-- TELA 3: resultado -->
+  <section id="tela-resultado" hidden>
+    <div class="card"><h2>Resultado do simulado</h2>
+      <div class="resumo" id="resumo"></div>
+      <div class="row" style="margin:0">
+        <button class="btn" id="b-refazer" type="button">Refazer Simulado</button>
+        <button class="btn ghost" id="b-novo" type="button">Novo Filtro</button>
+      </div>
+    </div>
+    <div id="gabarito"></div>
+  </section>
+</main>
+<footer>Plataforma independente de estudo, sem vínculo com o INEP ou o MEC. Inclui questões originais e questões das provas do ENEM 2016, 2017, 2018, 2024 e 2025 (gabaritos e resoluções elaborados nesta plataforma; confira com o gabarito oficial do INEP).</footer>
+
+<script>
+/* =====================================================================
+   BASE DE DADOS — para crescer até 1.000+ questões, basta adicionar objetos
+   neste array (ou mover para um arquivo questoes.js / JSON e carregar com fetch).
+   Campos: area, assunto, texto (opcional), enunciado, alternativas[5],
+           correta (0=A … 4=E), explicacao.
+   O id é gerado automaticamente. Áreas e assuntos novos aparecem sozinhos nos filtros.
+   ===================================================================== */
+/* Atalho para cadastrar rápido: Q(area, assunto, enunciado, [A,B,C,D,E], correta(0-4), explicacao, texto?) */
+const Q=(area,assunto,enunciado,alternativas,correta,explicacao,texto)=>({area,assunto,enunciado,alternativas,correta,explicacao,texto});
+const Qf=(fonte,...a)=>({...Q(...a),fonte});
+const L="Linguagens e Códigos",H="Ciências Humanas",N="Ciências da Natureza",M="Matemática";
+const QUESTOES = [
+ {area:"Linguagens e Códigos",assunto:"Figuras de linguagem",
+  texto:"“Amor é fogo que arde sem se ver; / é ferida que dói e não se sente.” (Luís de Camões)",
+  enunciado:"A construção do trecho, que reúne ideias aparentemente contraditórias para expressar o amor, caracteriza a figura de linguagem denominada",
+  alternativas:["metonímia.","paradoxo.","eufemismo.","onomatopeia.","pleonasmo."],correta:1,
+  explicacao:"“Fogo que arde sem se ver” e “ferida que dói e não se sente” unem ideias que se contradizem na lógica comum. Isso é paradoxo."},
+ {area:"Linguagens e Códigos",assunto:"Funções da linguagem",
+  texto:"“Compre agora! Só hoje, 50% de desconto em todo o site. Aproveite!”",
+  enunciado:"O texto publicitário apresenta predomínio da função da linguagem que busca",
+  alternativas:["expressar emoções do emissor.","descrever dados objetivos da realidade.","convencer o leitor a agir, com verbos no imperativo.","explicar o próprio código linguístico.","valorizar a sonoridade e a forma da mensagem."],correta:2,
+  explicacao:"Verbos no imperativo (“compre”, “aproveite”) e apelo direto ao receptor caracterizam a função conativa (apelativa)."},
+ {area:"Linguagens e Códigos",assunto:"Literatura brasileira",
+  enunciado:"Em obras como Memórias Póstumas de Brás Cubas, Machado de Assis rompe com o idealismo romântico. Uma característica dessa ruptura é",
+  alternativas:["a exaltação da natureza e do herói nacional.","a idealização da mulher e do amor impossível.","a defesa de ideais abolicionistas por meio de panfletos.","o narrador que ironiza os costumes e a hipocrisia da elite.","o uso exclusivo de versos metrificados e rimados."],correta:3,
+  explicacao:"O Realismo machadiano usa a ironia e a análise psicológica para criticar a sociedade. O narrador-defunto, sem pudores, escancara a hipocrisia das elites."},
+ {area:"Ciências Humanas",assunto:"História do Brasil",
+  enunciado:"Durante o Estado Novo (1937–1945), o governo de Getúlio Vargas caracterizou-se por",
+  alternativas:["centralização do poder, censura e propaganda oficial por meio do DIP.","ampla autonomia dos estados e fortalecimento das oligarquias.","pluripartidarismo e eleições diretas anuais.","abertura irrestrita da economia ao capital estrangeiro.","fim da legislação trabalhista criada na década de 1930."],correta:0,
+  explicacao:"O Estado Novo fechou o Congresso, extinguiu os partidos e controlou a imprensa pelo DIP, enquanto ampliava a legislação trabalhista (CLT, 1943)."},
+ {area:"Ciências Humanas",assunto:"Geografia urbana",
+  enunciado:"O intenso êxodo rural no Brasil, na segunda metade do século XX, teve como consequência direta nas grandes cidades",
+  alternativas:["queda da demanda por moradia.","redução do setor de serviços.","diminuição do trânsito e da poluição.","estabilização do número de habitantes das metrópoles.","crescimento acelerado, com déficit de infraestrutura e ocupações irregulares."],correta:4,
+  explicacao:"A urbanização rápida e desordenada superou a oferta de moradia, saneamento e transporte, gerando periferias e favelas."},
+ {area:"Ciências Humanas",assunto:"Filosofia política",
+  enunciado:"Para Thomas Hobbes, os indivíduos aceitam submeter-se a um soberano porque, sem ele,",
+  alternativas:["viveriam em perfeita harmonia natural.","prevaleceria o estado de guerra de todos contra todos.","a propriedade privada deixaria de existir.","a religião perderia todo o sentido.","o comércio seria impossível por falta de moedas."],correta:1,
+  explicacao:"Em Hobbes, o estado de natureza é de insegurança permanente. O contrato social cria o Estado para garantir a paz e a vida."},
+ {area:"Ciências da Natureza",assunto:"Ecologia",
+  enunciado:"O mercúrio lançado em rios por garimpos contamina o ambiente. Em uma cadeia alimentar aquática, a maior concentração desse metal é encontrada",
+  alternativas:["no fitoplâncton, por ser a base da cadeia.","na água, por estar dissolvido.","nos peixes predadores de topo, por bioacumulação e biomagnificação.","nos decompositores, por consumirem matéria morta.","igualmente em todos os níveis tróficos."],correta:2,
+  explicacao:"O mercúrio não é eliminado e se acumula nos tecidos. A cada nível trófico a concentração aumenta (biomagnificação), atingindo o pico nos predadores de topo."},
+ {area:"Ciências da Natureza",assunto:"Física: cinemática",
+  enunciado:"Um carro percorre 120 km em 1 h 30 min. A velocidade média desse carro, em m/s, é aproximadamente",
+  alternativas:["15,0.","18,5.","22,2.","25,0.","80,0."],correta:2,
+  explicacao:"120 km ÷ 1,5 h = 80 km/h. Dividindo por 3,6: 80 ÷ 3,6 ≈ 22,2 m/s. A alternativa E traz o valor correto, mas na unidade errada."},
+ {area:"Ciências da Natureza",assunto:"Química ambiental",
+  enunciado:"A chuva ácida em regiões industriais está associada principalmente à emissão de",
+  alternativas:["óxidos de enxofre e de nitrogênio.","gás oxigênio e vapor d’água.","gás hélio e argônio.","metano proveniente de aterros, apenas.","clorofluorcarbonetos que destroem o ozônio."],correta:0,
+  explicacao:"SO₂ e NOₓ reagem com a água da atmosfera e formam ácidos sulfúrico e nítrico, reduzindo o pH da chuva."},
+ {area:"Matemática",assunto:"Funções",
+  enunciado:"Uma corrida de táxi custa R$ 5,00 de bandeirada mais R$ 2,50 por quilômetro rodado. O valor de uma corrida de 12 km é",
+  alternativas:["R$ 30,00.","R$ 32,50.","R$ 37,50.","R$ 35,00.","R$ 42,00."],correta:3,
+  explicacao:"A função é f(x) = 5 + 2,5x. Com x = 12: 5 + 30 = R$ 35,00."},
+ {area:"Matemática",assunto:"Porcentagem",
+  enunciado:"Um produto de R$ 200,00 sofreu aumento de 20% e, depois, desconto de 20% sobre o novo preço. O preço final é",
+  alternativas:["R$ 200,00.","R$ 192,00.","R$ 180,00.","R$ 196,00.","R$ 160,00."],correta:1,
+  explicacao:"Após o aumento: 200 × 1,2 = 240. Após o desconto: 240 × 0,8 = 192. Os percentuais incidem sobre bases diferentes."},
+ {area:"Matemática",assunto:"Probabilidade",
+  enunciado:"Uma urna contém 5 bolas vermelhas, 3 azuis e 2 verdes. Retirando-se uma bola ao acaso, a probabilidade de ela ser azul é de",
+  alternativas:["20%.","25%.","30%.","35%.","50%."],correta:2,
+  explicacao:"Há 3 bolas azuis em um total de 10. P = 3/10 = 30%."}
+,
+/* ---------- Lote 2: Linguagens ---------- */
+Q(L,"Gramática","Assinale a frase em que o verbo está de acordo com a norma-padrão.",["Fazem dois anos que moro aqui.","Faz dois anos que moro aqui.","Haviam muitos alunos na sala.","Houveram muitos problemas.","Existe muitos casos."],1,"Fazer indicando tempo e haver no sentido de existir são impessoais e ficam na 3ª pessoa do singular. “Existe” deveria concordar com “casos”."),
+Q(L,"Gramática","Assinale a frase com uso correto do acento indicativo de crase.",["Vou à pé para a escola.","Estou disposto à colaborar.","Entreguei o convite à diretora.","Referiu-se à ele com respeito.","Chegamos à uma conclusão."],2,"A crase une a preposição “a” ao artigo “a” diante de palavra feminina determinada. Não ocorre antes de verbo, pronome pessoal ou artigo indefinido."),
+Q(L,"Semântica","Na frase “Ele tem um coração de pedra”, a expressão destacada está empregada em sentido",["denotativo, indicando material do órgão.","conotativo, indicando insensibilidade.","técnico, de uso científico.","literal, descrevendo um fato.","neutro, sem valor expressivo."],1,"Há sentido figurado (conotativo): a pedra é dura, logo a pessoa é insensível."),
+Q(L,"Gêneros textuais","A charge distingue-se de outros gêneros por",["narrar fatos sem opinião.","criticar com humor fatos atuais, combinando imagem e texto.","ensinar procedimentos passo a passo.","registrar dados estatísticos.","reproduzir leis e normas."],1,"A charge usa caricatura e ironia para comentar criticamente acontecimentos do momento."),
+Q(L,"Variação linguística","Palavras como “aipim”, “macaxeira” e “mandioca” para a mesma raiz exemplificam variação",["histórica.","social.","de registro formal.","regional.","profissional."],3,"Diferenças de vocabulário conforme a região geográfica são variação regional (diatópica)."),
+Q(L,"Literatura brasileira","A Semana de Arte Moderna de 1922 teve como principal proposta",["manter os modelos parnasianos.","imitar a estética europeia do século XIX.","restringir a arte às academias.","romper com padrões acadêmicos e valorizar a cultura nacional.","retomar o ideal árcade."],3,"Os modernistas defendiam liberdade formal, linguagem coloquial e identidade brasileira."),
+Q(L,"Literatura brasileira","Em O Guarani, José de Alencar constrói a figura de Peri como",["vilão da história colonial.","herói idealizado, símbolo nacional.","personagem cômico e marginal.","crítico da escravidão moderna.","narrador onisciente irônico."],1,"O Romantismo indianista idealiza o indígena como herói leal, belo e corajoso."),
+Q(L,"Literatura brasileira","A poesia barroca de Gregório de Matos revela, muitas vezes,",["serenidade e equilíbrio clássicos.","conflito entre o prazer terreno e a culpa religiosa.","idealização do campo e da vida simples.","experimentação com versos livres.","neutralidade científica."],1,"O Barroco é marcado por tensões entre o mundo material e o espiritual, pecado e perdão."),
+Q(L,"Coesão textual","Em “Choveu muito; portanto, o jogo foi adiado”, o conectivo expressa ideia de",["oposição.","causa.","conclusão.","condição.","comparação."],2,"“Portanto” introduz a consequência (conclusão) do fato anterior."),
+Q(L,"Artes","O Cubismo, de Pablo Picasso, caracteriza-se por",["cores suaves e luz natural.","fragmentação e decomposição das formas em planos geométricos.","representação fiel da realidade.","temas exclusivamente religiosos.","uso de perspectiva renascentista."],1,"O Cubismo mostra o objeto de vários ângulos ao mesmo tempo, em formas geométricas."),
+Q(L,"Leitura e mídia","Diante de uma notícia suspeita nas redes sociais, a atitude mais adequada é",["compartilhar logo, para alertar os amigos.","confiar se muita gente curtiu.","checar a fonte, a data e outros veículos confiáveis.","aceitar se houver imagem.","acreditar se confirmar o que já se pensa."],2,"Verificar autoria, data e confirmação em fontes independentes combate a desinformação."),
+Q(L,"Funções da linguagem","Em um poema que fala sobre o próprio ato de escrever poemas, predomina a função",["conativa.","fática.","referencial.","emotiva.","metalinguística."],4,"Quando a linguagem fala sobre a própria linguagem ou o código, trata-se de função metalinguística."),
+/* ---------- Lote 2: Ciências Humanas ---------- */
+Q(H,"História geral","A Revolução Francesa (1789) representou",["o fortalecimento do absolutismo.","o fim do Antigo Regime e a afirmação de ideais de liberdade e igualdade.","a restauração do feudalismo.","a expansão do mercantilismo.","o início da Guerra Fria."],1,"A revolução derrubou privilégios da nobreza e do clero, difundindo ideais iluministas."),
+Q(H,"História geral","Entre as consequências sociais da Revolução Industrial está",["o êxodo urbano para o campo.","o fim do trabalho assalariado.","o surgimento do operariado urbano, com jornadas longas e más condições.","a redução da produção de mercadorias.","o desaparecimento da burguesia."],2,"As fábricas concentraram trabalhadores nas cidades, sob exploração intensa, o que gerou movimentos operários."),
+Q(H,"História do Brasil","O sistema de capitanias hereditárias, adotado por Portugal no século XVI, buscava",["ocupar e defender o território com recursos de particulares.","extinguir o comércio com a Europa.","entregar a terra aos indígenas.","criar uma república federativa.","impedir a produção de açúcar."],0,"A Coroa transferiu a donatários a tarefa de colonizar e financiar a ocupação da terra."),
+Q(H,"História do Brasil","Uma limitação da abolição de 1888 (Lei Áurea) foi",["o aumento imediato dos salários.","a distribuição de terras aos libertos.","a falta de políticas de inclusão para os ex-escravizados.","o fim do racismo no país.","a criação de escolas gratuitas para todos."],2,"A lei extinguiu a escravidão, mas não garantiu terra, trabalho ou educação, o que perpetuou desigualdades."),
+Q(H,"História do Brasil","A chamada “política do café com leite” na Primeira República consistia em",["revezamento na Presidência entre as elites de São Paulo e Minas Gerais.","voto universal e secreto.","domínio dos militares gaúchos.","fim das oligarquias.","incentivo à indústria têxtil nordestina."],0,"Paulistas (café) e mineiros (leite) alternavam-se no poder, apoiados no voto de cabresto."),
+Q(H,"História do Brasil","O Ato Institucional nº 5 (1968), durante a ditadura militar, resultou em",["anistia ampla e imediata.","retorno das eleições diretas.","liberdade de imprensa.","fim da censura prévia.","ampliação da repressão e da censura, com fechamento do Congresso."],4,"O AI-5 suspendeu garantias constitucionais e endureceu o regime."),
+Q(H,"História geral","A Guerra Fria foi marcada por",["disputa entre EUA e URSS, com corrida armamentista e conflitos indiretos.","guerra direta entre as duas potências.","união entre capitalismo e socialismo.","hegemonia europeia.","colonização da América."],0,"A bipolaridade ideológica gerou disputas por influência sem confronto nuclear direto."),
+Q(H,"Geografia ambiental","O desmatamento da Amazônia tem como um de seus efeitos",["aumento da biodiversidade.","perda de espécies e alteração do regime de chuvas.","queda da emissão de carbono.","melhora da qualidade do solo.","redução da erosão."],1,"A floresta regula a umidade regional; sua perda reduz habitats e altera o ciclo da água."),
+Q(H,"Geografia econômica","A globalização contemporânea caracteriza-se por",["isolamento comercial dos países.","fronteiras fechadas ao capital.","fim das desigualdades regionais.","intenso fluxo de capitais, informações e mercadorias, com desigualdades persistentes.","uso exclusivo de moedas locais."],3,"Tecnologias de comunicação integram mercados, mas os benefícios se distribuem de forma desigual."),
+Q(H,"Sociologia","Para Émile Durkheim, o “fato social” caracteriza-se por ser",["individual, interior e voluntário.","exterior ao indivíduo, geral e coercitivo.","exclusivamente biológico.","fruto do acaso.","restrito à família."],1,"Normas, costumes e leis existem independentemente do indivíduo e exercem pressão sobre ele."),
+Q(H,"Filosofia","No mito da caverna, de Platão, as sombras na parede representam",["a verdade absoluta.","as ideias inatas.","o conhecimento científico.","as aparências sensíveis, que enganam quem não busca o saber.","a política ideal."],3,"Sair da caverna simboliza a passagem da opinião ao conhecimento verdadeiro."),
+Q(H,"Geografia humana","A transição demográfica brasileira traduz-se hoje em",["alta natalidade e baixa expectativa de vida.","crescimento populacional explosivo.","queda da natalidade e envelhecimento da população.","aumento da mortalidade infantil.","predomínio de jovens na estrutura etária."],2,"Com menos nascimentos e maior longevidade, cresce a proporção de idosos."),
+/* ---------- Lote 2: Ciências da Natureza ---------- */
+Q(N,"Biologia: fotossíntese","Na fotossíntese, as plantas utilizam luz, água e gás carbônico para produzir",["proteínas e liberar nitrogênio.","glicose e liberar oxigênio.","lipídios e liberar metano.","amônia e liberar hidrogênio.","etanol e liberar CO₂."],1,"6 CO₂ + 6 H₂O + luz → C₆H₁₂O₆ + 6 O₂."),
+Q(N,"Genética","No cruzamento de dois heterozigotos (Aa × Aa), a proporção fenotípica esperada para dominância completa é de",["1:1.","2:1.","1:2:1.","3:1.","4:0."],3,"Os genótipos são 1 AA : 2 Aa : 1 aa, que resultam em 3 fenótipos dominantes para 1 recessivo."),
+Q(N,"Evolução","Segundo a seleção natural de Darwin, as populações mudam porque",["os organismos adquirem características por esforço.","os indivíduos mais adaptados tendem a sobreviver e se reproduzir mais.","o ambiente cria mutações dirigidas.","as espécies são imutáveis.","os mais fortes eliminam todos os outros."],1,"Variações herdáveis favoráveis ao ambiente aumentam o sucesso reprodutivo."),
+Q(N,"Imunologia","As vacinas protegem porque",["matam diretamente o agente infeccioso.","fornecem anticorpos prontos permanentes.","estimulam a memória imunológica sem causar a doença.","substituem o sistema imune.","eliminam todos os vírus do corpo."],2,"O antígeno presente na vacina prepara o organismo para responder rápido a uma infecção real."),
+Q(N,"Física: eletricidade","Um chuveiro de 5.500 W ligado em 220 V consome corrente elétrica de",["25 A.","12 A.","2,5 A.","50 A.","1,0 A."],0,"P = V · i, logo i = 5.500 ÷ 220 = 25 A."),
+Q(N,"Física: ondas","O som não se propaga no vácuo porque",["é uma onda eletromagnética.","é uma onda mecânica que precisa de meio material.","tem velocidade infinita.","é absorvido pela luz.","possui frequência nula."],1,"Ondas mecânicas dependem de partículas para transmitir a vibração."),
+Q(N,"Física: dinâmica","Uma força resultante faz um corpo de 10 kg acelerar a 2 m/s². Seu valor é",["5 N.","12 N.","0,2 N.","20 N.","80 N."],3,"Segunda lei de Newton: F = m · a = 10 × 2 = 20 N."),
+Q(N,"Física: energia","Em uma usina hidrelétrica, a energia da água armazenada na represa é transformada, em sequência, em",["nuclear, térmica e elétrica.","química, luminosa e elétrica.","potencial gravitacional, cinética e elétrica.","eólica, térmica e mecânica.","solar, química e elétrica."],2,"A queda da água converte energia potencial em cinética, que gira a turbina e gera eletricidade."),
+Q(N,"Química: separação de misturas","Nas salinas, o sal é obtido da água do mar pelo processo de",["filtração.","decantação.","destilação fracionada.","evaporação.","centrifugação."],3,"O sol evapora a água, e o sal cristaliza."),
+Q(N,"Química: ligações","O cloreto de sódio (NaCl) é formado por ligação",["covalente apolar.","metálica.","iônica.","de hidrogênio.","covalente dativa."],2,"Ocorre transferência de elétrons do sódio (metal) para o cloro (ametal), formando íons."),
+Q(N,"Química: propriedades","O gelo flutua na água líquida porque",["é menos denso que a água.","é mais pesado que a água.","possui menos massa.","está em temperatura mais alta.","contém ar em todo o volume."],0,"Na solidificação, as moléculas formam uma estrutura mais aberta, o que reduz a densidade."),
+Q(N,"Ecologia","Os principais gases associados ao agravamento do efeito estufa são",["O₂ e N₂.","He e Ar.","H₂ e Ne.","CO₂ e CH₄.","Cl₂ e O₃ apenas."],3,"Dióxido de carbono e metano retêm radiação infravermelha e aquecem a atmosfera."),
+/* ---------- Lote 2: Matemática ---------- */
+Q(M,"Regra de três","Três pedreiros constroem um muro em 12 dias. Seis pedreiros, no mesmo ritmo, farão o mesmo muro em",["24 dias.","8 dias.","6 dias.","4 dias.","18 dias."],2,"Grandezas inversamente proporcionais: dobrando os trabalhadores, o prazo cai pela metade."),
+Q(M,"Estatística","As notas de um aluno foram 6, 7, 8 e 9. A média é",["7,0.","7,5.","8,0.","8,5.","6,5."],1,"(6 + 7 + 8 + 9) ÷ 4 = 30 ÷ 4 = 7,5."),
+Q(M,"Geometria plana","Para cercar um terreno retangular de 20 m por 15 m, o comprimento mínimo de cerca é",["35 m.","300 m.","60 m.","70 m.","150 m."],3,"Perímetro = 2 × (20 + 15) = 70 m. O valor de 300 é a área."),
+Q(M,"Geometria plana","A área de um círculo de raio 10 cm, adotando π = 3,14, é",["31,4 cm².","62,8 cm².","100 cm².","628 cm².","314 cm²."],4,"A = π · r² = 3,14 × 100 = 314 cm²."),
+Q(M,"Matemática financeira","Um capital de R$ 1.000,00 rende juros simples de 2% ao mês durante 6 meses. O montante é",["R$ 1.120,00.","R$ 1.020,00.","R$ 1.200,00.","R$ 1.126,16.","R$ 1.060,00."],0,"J = 1.000 × 0,02 × 6 = 120. Montante = 1.000 + 120 = R$ 1.120,00."),
+Q(M,"Análise combinatória","Com 4 camisas e 3 calças diferentes, o número de combinações possíveis é",["7.","9.","10.","12.","24."],3,"Princípio multiplicativo: 4 × 3 = 12."),
+Q(M,"Álgebra","A soma das raízes da equação x² − 5x + 6 = 0 é",["6.","−5.","5.","1.","−6."],2,"As raízes são 2 e 3, e a soma é 5. Pela fórmula, −b/a = 5."),
+Q(M,"Estatística","A mediana do conjunto {2, 4, 4, 7, 10} é",["4.","5,4.","7.","3.","10."],0,"Com os dados em ordem, o valor central é 4. A média, 5,4, é outra medida."),
+Q(M,"Geometria","Em um triângulo retângulo com catetos de 6 cm e 8 cm, a hipotenusa mede",["14 cm.","10 cm.","12 cm.","7 cm.","9 cm."],1,"Pitágoras: 6² + 8² = 36 + 64 = 100, logo a hipotenusa é 10 cm."),
+Q(M,"Geometria espacial","Uma caixa d’água cúbica com 2 m de aresta comporta, em litros,",["800.","4.000.","6.000.","2.000.","8.000."],4,"V = 2³ = 8 m³. Como 1 m³ = 1.000 L, são 8.000 L."),
+Q(M,"Escala","Em um mapa de escala 1:50.000, 4 cm representam, na realidade,",["200 m.","2 km.","20 km.","500 m.","4 km."],1,"4 cm × 50.000 = 200.000 cm = 2.000 m = 2 km."),
+Q(M,"Progressões","Na progressão aritmética 2, 5, 8, …, o décimo termo é",["27.","30.","32.","29.","26."],3,"a₁₀ = a₁ + 9r = 2 + 9 × 3 = 29.")
+,
+/* ---------- Lote 3: Linguagens ---------- */
+Q(L,"Gramática","Assinale a frase com regência verbal de acordo com a norma-padrão.",["Assisti o filme ontem.","Prefiro cinema do que teatro.","Obedeça aos sinais de trânsito.","Aspirava o cargo de gerente.","Chegamos na cidade de madrugada."],2,"Obedecer pede a preposição “a”. Assistir (ver) pede “a”, preferir leva “a” e não “do que”, aspirar (almejar) pede “a” e chegar pede “a”."),
+Q(L,"Pontuação","Assinale a frase pontuada corretamente.",["Os alunos, chegaram cedo.","Maria, minha amiga, viajou ontem.","Ele disse, que viria.","Compramos, pão leite e queijo.","Choveu, e eu saí, sem guarda-chuva."],1,"O aposto “minha amiga” é explicativo e vem isolado por vírgulas. Nas demais há vírgula entre termos que não se separam."),
+Q(L,"Figuras de linguagem","Em “Minha mãe é um anjo”, ocorre",["ironia.","comparação.","antítese.","metáfora.","onomatopeia."],3,"Há identificação direta entre dois seres, sem conectivo comparativo: metáfora."),
+Q(L,"Figuras de linguagem","“Já te falei mil vezes para fechar a porta!” exemplifica a figura chamada",["hipérbole.","eufemismo.","metonímia.","pleonasmo.","silepse."],0,"O exagero intencional (“mil vezes”) para enfatizar a ideia é hipérbole."),
+Q(L,"Intertextualidade","A paródia, como recurso intertextual, consiste em",["citar um texto sem alteração e com aspas.","resumir uma obra para fins escolares.","retomar um texto conhecido para transformá-lo com humor ou crítica.","traduzir um texto para outra língua.","copiar integralmente uma obra."],2,"A paródia dialoga com o original, mas altera sentidos, em geral com intenção cômica ou crítica."),
+Q(L,"Produção textual","Na redação do ENEM, a proposta de intervenção deve",["ser omitida se o texto for longo.","respeitar os direitos humanos e indicar agente, ação e meio.","limitar-se a repetir a tese.","culpar um único grupo social.","citar apenas dados estrangeiros."],1,"A Competência 5 exige solução detalhada e respeitosa aos direitos humanos."),
+Q(L,"Literatura brasileira","O Parnasianismo caracteriza-se por",["subjetivismo e misticismo.","culto à forma, rigor métrico e objetividade.","linguagem coloquial e verso livre.","nacionalismo indianista.","crítica social por meio da prosa."],1,"Os parnasianos defendiam a “arte pela arte”, com vocabulário erudito e perfeição formal."),
+Q(L,"Literatura brasileira","Cruz e Sousa é um dos principais nomes do Simbolismo, que valoriza",["a razão e o cientificismo.","o realismo documental.","a descrição objetiva da natureza.","a musicalidade, a subjetividade e a espiritualidade.","o humor popular."],3,"O Simbolismo sugere em vez de descrever, com sinestesias, aliterações e temas transcendentais."),
+Q(L,"Literatura brasileira","Em Vidas Secas, Graciliano Ramos retrata",["a elite cafeeira paulista.","os salões do Rio de Janeiro.","o idealismo romântico.","a vida urbana no século XXI.","a miséria e a falta de comunicação de uma família sertaneja."],4,"A obra denuncia a seca, a exploração e a dificuldade de expressão de Fabiano e sua família."),
+Q(L,"Literatura brasileira","Quarto de Despejo, de Carolina Maria de Jesus, é",["um romance de ficção científica.","um diário que relata o cotidiano e a fome numa favela.","uma peça teatral barroca.","um manual de etiqueta.","um poema épico."],1,"A autora registra, em linguagem própria, a vida de uma catadora na favela do Canindé, em São Paulo."),
+Q(L,"Educação Física","A prática regular de atividade física contribui para",["prevenir doenças crônicas e melhorar a saúde mental.","dispensar acompanhamento médico em qualquer caso.","substituir a alimentação.","aumentar o sedentarismo.","eliminar o risco de lesões."],0,"O exercício favorece o coração, o controle de peso e o bem-estar, mas exige orientação adequada."),
+Q(L,"Linguagem não verbal","Um semáforo comunica por meio de linguagem",["exclusivamente verbal escrita.","oral e informal.","não verbal, baseada em cores convencionadas.","poética e ambígua.","literária e culta."],2,"As cores vermelho, amarelo e verde têm sentido social convencionado, sem palavras."),
+/* ---------- Lote 3: Humanas ---------- */
+Q(H,"História geral","No feudalismo, as relações entre senhores eram marcadas por",["comércio marítimo global.","suserania e vassalagem.","industrialização acelerada.","voto popular.","trabalho assalariado urbano."],1,"A terra era trocada por fidelidade e serviço militar, numa economia basicamente agrária."),
+Q(H,"História geral","O Renascimento cultural europeu destacou o antropocentrismo, que",["coloca Deus como único tema possível.","nega a ciência.","valoriza o ser humano, a razão e a observação da natureza.","defende o retorno ao feudalismo.","proíbe a arte profana."],2,"O ser humano passou ao centro do interesse, inspirado na Antiguidade clássica."),
+Q(H,"História geral","Um dos motivos das Grandes Navegações foi",["fugir da peste negra apenas.","propagar o iluminismo.","conquistar a América do Norte por tratado.","buscar novas rotas para as especiarias das Índias.","abolir o mercantilismo."],3,"A tomada de Constantinopla (1453) encareceu a rota terrestre, e isso estimulou a busca por caminhos marítimos."),
+Q(H,"História do Brasil","A Independência do Brasil (1822) caracterizou-se por",["fim imediato da escravidão.","manutenção da monarquia e da unidade territorial, sem mudança social profunda.","reforma agrária ampla.","proclamação da república federativa.","voto universal."],1,"A elite manteve o poder e a ordem escravista, com D. Pedro I como imperador."),
+Q(H,"História do Brasil","O Plano de Metas do governo Juscelino Kubitschek (“50 anos em 5”) priorizou",["a economia exclusivamente agrária.","a estatização do comércio exterior.","a industrialização, a energia e a construção de Brasília.","o fechamento da economia.","a reforma monárquica."],2,"Houve forte entrada de capital estrangeiro, com destaque para a indústria automobilística."),
+Q(H,"História do Brasil","A Constituição de 1988 é chamada de “Constituição Cidadã” porque",["restringiu o voto.","ampliou direitos civis, políticos e sociais.","manteve a censura.","instituiu a monarquia.","extinguiu os partidos."],1,"Ela marcou a redemocratização e ampliou garantias fundamentais."),
+Q(H,"História geral","Entre as causas da Primeira Guerra Mundial estão",["o descobrimento da América.","o fim do Império Romano.","a crise de 2008.","a expansão do socialismo na África.","o imperialismo, as alianças militares e os nacionalismos."],4,"O assassinato do arquiduque Francisco Ferdinando, em Sarajevo (1914), foi apenas o estopim."),
+Q(H,"História geral","O Holocausto consistiu em",["extermínio sistemático de milhões de judeus e outros grupos pelo regime nazista.","uma epidemia na Europa medieval.","uma batalha naval.","um tratado de paz.","um movimento artístico."],0,"Foi um genocídio planejado pelo Estado nazista durante a Segunda Guerra Mundial."),
+Q(H,"Geografia","Os fusos horários baseiam-se no movimento de",["translação, com 12 fusos.","rotação, com 24 fusos de 15° cada.","precessão, com 360 fusos.","nutação, com 7 fusos.","revolução lunar."],1,"A Terra gira 360° em 24 horas, ou seja, 15° por hora."),
+Q(H,"Geografia do Brasil","O bioma de árvores de troncos retorcidos, solos ácidos e muitas nascentes é o",["Pampa.","Caatinga.","Mata Atlântica.","Cerrado.","Pantanal."],3,"O Cerrado, savana do Brasil Central, é chamado de “berço das águas” por abrigar nascentes de grandes bacias."),
+Q(H,"Geografia","Entre as fontes de energia renováveis está",["o carvão mineral.","o petróleo.","o gás natural.","a energia eólica.","o urânio."],3,"Vento, sol e água se regeneram naturalmente. Os demais são recursos finitos."),
+Q(H,"Sociologia","Para Karl Marx, a mais-valia é",["o lucro do comerciante.","o salário pago ao trabalhador.","parte do valor produzido pelo trabalhador, apropriada pelo capitalista.","um imposto estatal.","a renda da terra."],2,"O trabalho gera mais valor do que o salário pago, e a diferença fica com o dono dos meios de produção."),
+/* ---------- Lote 3: Natureza ---------- */
+Q(N,"Citologia","A principal função das mitocôndrias é",["sintetizar proteínas.","realizar a respiração celular e produzir ATP.","armazenar o DNA.","realizar a fotossíntese.","digerir partículas."],1,"Nelas ocorre a fase final da respiração celular, que libera energia na forma de ATP."),
+Q(N,"Fisiologia humana","As trocas gasosas no pulmão ocorrem nos",["brônquios.","bronquíolos.","alvéolos.","traqueia.","diafragma."],2,"Nos alvéolos, o O₂ passa ao sangue e o CO₂ sai dele, por difusão."),
+Q(N,"Ecologia","Em um líquen, a associação entre alga e fungo é um exemplo de",["parasitismo.","predação.","competição.","mutualismo.","comensalismo."],3,"A alga faz fotossíntese e o fungo oferece proteção e umidade, o que beneficia ambos."),
+Q(N,"Saúde pública","Uma medida eficaz contra a dengue é",["eliminar água parada, criadouro do Aedes aegypti.","evitar o contato com pessoas doentes apenas.","ferver todos os alimentos.","tomar antibiótico preventivo.","usar repelente só em locais frios."],0,"O mosquito se reproduz em água parada, por isso eliminar os criadouros reduz a transmissão."),
+Q(N,"Física: óptica","A imagem formada por um espelho plano é",["real e invertida.","virtual, direita e do mesmo tamanho do objeto.","real e ampliada.","virtual e reduzida.","inexistente."],1,"A imagem fica atrás do espelho, sem poder ser projetada, e tem o mesmo tamanho do objeto."),
+Q(N,"Física: termologia","Espontaneamente, o calor flui",["do corpo mais frio para o mais quente.","somente entre sólidos.","do corpo de maior temperatura para o de menor temperatura.","sempre pelo vácuo.","apenas por radiação."],2,"A transferência de calor ocorre no sentido da maior para a menor temperatura, até o equilíbrio térmico."),
+Q(N,"Física: cinemática","A velocidade de 72 km/h equivale a",["10 m/s.","15 m/s.","30 m/s.","20 m/s.","25 m/s."],3,"72 ÷ 3,6 = 20 m/s."),
+Q(N,"Física: energia","Uma lâmpada de 60 W permanece ligada por 5 horas. A energia consumida é de",["0,3 kWh.","3 kWh.","0,012 kWh.","12 kWh.","30 kWh."],0,"E = 0,06 kW × 5 h = 0,3 kWh."),
+Q(N,"Química","Elementos de um mesmo grupo da tabela periódica têm propriedades semelhantes porque",["têm a mesma massa.","têm o mesmo número de prótons.","possuem o mesmo número de elétrons na camada de valência.","são todos gases.","foram descobertos juntos."],2,"A camada de valência determina o comportamento químico."),
+Q(N,"Química","Uma solução aquosa com pH igual a 9 é",["ácida.","neutra.","fortemente ácida.","básica (alcalina).","salina apenas."],3,"pH menor que 7 é ácido, igual a 7 é neutro e maior que 7 é básico."),
+Q(N,"Química ambiental","A reciclagem de latas de alumínio reduz",["a necessidade de qualquer coleta.","o consumo de energia e a extração de bauxita.","a quantidade de metais no planeta.","o volume de água dos rios.","a produção de papel."],1,"Reciclar gasta bem menos energia do que obter alumínio a partir do minério."),
+Q(N,"Biologia molecular","No DNA, a base nitrogenada que se pareia com a adenina é a",["citosina.","guanina.","uracila.","timina.","ribose."],3,"No DNA, A pareia com T e C com G. A uracila só existe no RNA."),
+/* ---------- Lote 3: Matemática ---------- */
+Q(M,"Proporção","Uma receita usa 2 xícaras de farinha para 3 de leite. Com 6 xícaras de farinha, serão necessárias de leite",["6.","8.","9.","12.","4."],2,"A razão é 2:3. Triplicando a farinha, triplica o leite: 3 × 3 = 9."),
+Q(M,"Porcentagem","15% de 240 equivalem a",["24.","36.","15.","48.","60."],1,"0,15 × 240 = 36."),
+Q(M,"Funções","Se f(x) = 3x − 2, o valor de f(4) é",["14.","12.","8.","10.","6."],3,"f(4) = 3 × 4 − 2 = 10."),
+Q(M,"Funções","O valor máximo da função f(x) = −x² + 4x é",["2.","4.","8.","0.","−4."],1,"O vértice está em x = 2, e f(2) = −4 + 8 = 4."),
+Q(M,"Geometria espacial","O volume de um cilindro de raio 2 m e altura 5 m, adotando π = 3, é",["30 m³.","20 m³.","60 m³.","100 m³.","15 m³."],2,"V = π r² h = 3 × 4 × 5 = 60 m³."),
+Q(M,"Probabilidade","Ao lançar um dado comum, a probabilidade de sair um número maior que 4 é de",["1/2.","1/6.","1/3.","2/3.","5/6."],2,"Os casos favoráveis são 5 e 6, ou seja, 2 em 6 = 1/3."),
+Q(M,"Trigonometria","Uma escada de 4 m forma 30° com o chão. A altura que ela atinge na parede é de (sen 30° = 0,5)",["1 m.","2 m.","3 m.","4 m.","8 m."],1,"h = 4 × sen 30° = 4 × 0,5 = 2 m."),
+Q(M,"Análise combinatória","O número de anagramas da palavra AMOR é",["4.","12.","16.","24.","8."],3,"Há 4 letras distintas, portanto 4! = 24."),
+Q(M,"Estatística","A moda do conjunto {3, 5, 5, 6, 7, 5, 8} é",["5.","6.","7.","3.","8."],0,"O valor que mais se repete é o 5, que aparece três vezes."),
+Q(M,"Sistemas lineares","Se x + y = 10 e x − y = 2, o valor de x é",["4.","5.","8.","2.","6."],4,"Somando as equações, 2x = 12 e x = 6 (e y = 4)."),
+Q(M,"Potências","O produto (3 × 10⁴) × (2 × 10³) é igual a",["6 × 10⁷.","5 × 10⁷.","6 × 10¹².","5 × 10¹².","6 × 10⁶."],0,"Multiplicam-se os coeficientes (3 × 2 = 6) e somam-se os expoentes (4 + 3 = 7)."),
+Q(M,"Grandezas","Uma viagem de 300 km, feita a 60 km/h de velocidade média, dura",["6 h.","4 h.","3 h.","5 h.","2 h."],3,"t = d ÷ v = 300 ÷ 60 = 5 h.")
+,
+/* ---------- Lote 4: Linguagens ---------- */
+Q(L,'Gramática','Assinale a frase com concordância de acordo com a norma-padrão.',['Ela está meia cansada.','Seguem anexo as cartas.','Elas estão bastantes felizes.','Ela estava meio cansada.','Seguem inclusos as notas.'],3,'“Meio” é advérbio e fica invariável. “Anexo” e “incluso” concordam com o substantivo, e “bastante” advérbio não varia.'),
+Q(L,'Gramática','A palavra “jacaré” é acentuada pela mesma regra de “café”. Qual outra segue essa regra?',['lâmpada','saúde','pântano','história','você'],4,'Oxítonas terminadas em A, E ou O (seguidas ou não de S) levam acento: café, você.'),
+Q(L,'Semântica','O antônimo de “efêmero” é',['passageiro.','breve.','fugaz.','momentâneo.','duradouro.'],4,'Efêmero é o que dura pouco. Seu oposto é duradouro.'),
+Q(L,'Gêneros textuais','O editorial de um jornal expressa',['a opinião do veículo sobre um tema atual.','a previsão do tempo.','dados de uma pesquisa de mercado.','o depoimento de um leitor.','um conto de ficção.'],0,'O editorial é um texto opinativo, sem assinatura, que representa a posição do jornal.'),
+Q(L,'Coesão textual','Em “Embora chova, sairemos”, o conectivo “embora” indica',['causa.','concessão.','finalidade.','tempo.','conclusão.'],1,'“Embora” introduz ideia contrária que não impede a ação principal: concessão.'),
+Q(L,'Funções da linguagem','Em “Alô? Está me ouvindo bem?”, predomina a função',['poética.','referencial.','fática.','emotiva.','metalinguística.'],2,'A fala testa e mantém o canal de comunicação: função fática.'),
+Q(L,'Leitura e mídia','O infográfico é um gênero que',['combina textos e elementos visuais para sintetizar informações.','narra uma história longa.','reproduz leis.','trata apenas de poesia.','dispensa dados.'],0,'Gráficos, ícones e legendas facilitam a leitura rápida de dados complexos.'),
+Q(L,'Variação linguística','Sobre a norma-padrão, é correto afirmar que ela',['é a única forma válida de comunicação.','é uma variedade entre outras, associada a prestígio social.','nunca muda.','é falada igualmente por todos.','elimina as gírias.'],1,'Toda variedade tem lógica própria. A norma-padrão é exigida em contextos formais, mas não é “mais correta” em si.'),
+Q(L,'Literatura brasileira','Castro Alves, o “poeta dos escravos”, destaca-se na poesia',['parnasiana, de rigor formal.','simbolista, de musicalidade.','condoreira, de denúncia social e abolicionista.','concretista.','barroca, de conflito religioso.'],2,'Em O Navio Negreiro, a retórica grandiosa (condoreirismo) denuncia o tráfico de escravizados.'),
+Q(L,'Literatura brasileira','Em O Cortiço, de Aluísio Azevedo, o comportamento das personagens é explicado',['apenas por vontade divina.','pela influência do meio, da raça e dos instintos (determinismo).','por fatores puramente sobrenaturais.','por idealização romântica.','por escolhas totalmente livres.'],1,'O Naturalismo trata o indivíduo como produto do ambiente e da biologia.'),
+Q(L,'Literatura brasileira','Clarice Lispector é conhecida, na prosa modernista, pela',['crítica social direta, em linguagem regional.','narrativa histórica linear.','introspecção e o fluxo de consciência.','exaltação indianista.','sátira parnasiana.'],2,'Seus textos exploram o mundo interior das personagens e momentos de epifania.'),
+Q(L,'Literatura brasileira','Carlos Drummond de Andrade, na poesia modernista, destaca-se por',['rimas fixas e linguagem arcaica.','poesia social, ironia e atenção ao cotidiano.','exaltar o herói nacional.','imitar o Barroco.','abolir o verso livre.'],1,'Obras como A Rosa do Povo e Sentimento do Mundo unem lirismo, ironia e engajamento.'),
+Q(L,'Artes','Antônio Francisco Lisboa, o Aleijadinho, é referência do',['Cubismo.','Modernismo.','Barroco mineiro.','Neoclassicismo francês.','Impressionismo.'],2,'Suas esculturas, como os Profetas de Congonhas, são marcos do Barroco brasileiro.'),
+/* ---------- Lote 4: Humanas ---------- */
+Q(H,'História geral','Os iluministas, como Montesquieu, defendiam',['o absolutismo de direito divino.','a separação dos poderes e a razão como guia.','o retorno ao feudalismo.','a censura religiosa.','o fim de todas as leis.'],1,'O Iluminismo criticou o absolutismo e inspirou constituições e revoluções liberais.'),
+Q(H,'História geral','A Reforma Protestante teve início com as críticas de Martinho Lutero',['ao Iluminismo.','à venda de indulgências pela Igreja Católica.','ao feudalismo.','ao Renascimento.','às Cruzadas.'],1,'As 95 teses (1517) questionavam a venda do perdão dos pecados.'),
+Q(H,'História do Brasil','As bandeiras paulistas, nos séculos XVI e XVII, contribuíram para',['a extinção da escravidão.','o fim da mineração.','a ampliação do território por meio do sertanismo, com busca de metais e captura de indígenas.','a criação da República.','a abertura dos portos.'],2,'Os bandeirantes avançaram além da linha de Tordesilhas, com violência contra povos indígenas.'),
+Q(H,'História do Brasil','O movimento das Diretas Já (1983–1984) reivindicava',['o voto aos analfabetos.','o fim do voto feminino.','a volta da monarquia.','a eleição direta para presidente.','a reforma agrária imediata.'],3,'Milhões foram às ruas pedindo eleições diretas, no fim da ditadura militar.'),
+Q(H,'História geral','A Revolução Russa de 1917 levou ao poder',['os czaristas.','os bolcheviques, liderados por Lênin.','os nazistas.','os liberais ingleses.','os fascistas.'],1,'Foi a primeira revolução socialista vitoriosa, com a criação da URSS em 1922.'),
+Q(H,'História geral','A Conferência de Berlim (1884–1885) tratou da',['unificação alemã.','partilha da África entre potências europeias.','independência da Índia.','Guerra Fria.','abolição na Europa.'],1,'Foi um marco do neocolonialismo, sem consulta aos povos africanos.'),
+Q(H,'Cartografia','A linha imaginária que divide a Terra em hemisférios Norte e Sul é',['o Trópico de Capricórnio.','o meridiano de Greenwich.','a linha do Equador.','o Círculo Polar Ártico.','o meridiano de 180°.'],2,'O Equador (latitude 0°) separa os hemisférios norte e sul.'),
+Q(H,'Geografia ambiental','O aquecimento global contribui para',['o aumento das geleiras polares.','o derretimento de geleiras e a elevação do nível do mar.','a redução dos eventos extremos.','o resfriamento dos oceanos.','o fim das estações.'],1,'O excesso de gases de efeito estufa eleva a temperatura média e afeta ambientes costeiros.'),
+Q(H,'Geografia humana','A migração pendular caracteriza-se pelo deslocamento',['definitivo entre países.','de refugiados de guerra.','sazonal para colheitas.','diário entre a moradia e o trabalho ou estudo, comum em áreas metropolitanas.','de aposentados para o litoral.'],3,'Moradores da periferia viajam diariamente ao centro, o que sobrecarrega o transporte.'),
+Q(H,'Geografia econômica','A monocultura extensiva em grandes propriedades pode provocar',['maior diversidade de cultivos.','concentração fundiária e esgotamento do solo.','fim do uso de máquinas.','redução da produção.','aumento de pequenos sítios.'],1,'Cultivar uma só espécie em larga escala empobrece o solo e favorece a concentração de terras.'),
+Q(H,'Filosofia','O método socrático, baseado em perguntas, é conhecido como',['dialética hegeliana.','maiêutica.','ceticismo.','empirismo.','niilismo.'],1,'Sócrates conduzia o interlocutor, por perguntas, a “dar à luz” o conhecimento.'),
+Q(H,'Sociologia','Julgar outra cultura apenas pelos valores da própria é',['relativismo cultural.','etnocentrismo.','multiculturalismo.','aculturação.','globalização.'],1,'O etnocentrismo toma a própria cultura como padrão e alimenta preconceitos.'),
+/* ---------- Lote 4: Natureza ---------- */
+Q(N,'Ecologia','Em uma cadeia alimentar, os produtores são',['decompositores.','consumidores secundários.','seres autótrofos, como as plantas.','predadores de topo.','parasitas.'],2,'Os produtores fabricam matéria orgânica pela fotossíntese e sustentam os demais níveis.'),
+Q(N,'Citologia','As células procariontes, como as bactérias, não possuem',['ribossomos.','DNA.','membrana plasmática.','núcleo delimitado por membrana.','citoplasma.'],3,'O DNA fica disperso no citoplasma, em uma região chamada nucleoide.'),
+Q(N,'Genética','No sistema ABO, o doador universal de hemácias é o tipo',['AB.','O.','A.','B.','Rh positivo apenas.'],1,'O sangue O não tem antígenos A nem B, por isso pode ser doado a qualquer tipo ABO.'),
+Q(N,'Imunologia','Os antibióticos são eficazes contra',['vírus.','bactérias.','alergias.','vírus e bactérias igualmente.','câncer.'],1,'Eles atuam em estruturas bacterianas e não servem contra viroses, como a gripe.'),
+Q(N,'Botânica','Os estômatos das folhas regulam',['a absorção de água pelas raízes.','a produção de sementes.','as trocas gasosas e a transpiração.','o crescimento do caule.','a polinização.'],2,'A abertura e o fechamento dessas estruturas controlam a entrada de CO₂ e a saída de vapor d’água.'),
+Q(N,'Fisiologia humana','A insulina, produzida pelo pâncreas, tem como função',['digerir proteínas.','reduzir a glicose no sangue.','transportar oxigênio.','produzir bile.','aumentar a pressão arterial.'],1,'O hormônio favorece a entrada de glicose nas células, e sua falta está ligada ao diabetes.'),
+Q(N,'Física: hidrostática','Em um líquido em equilíbrio, a pressão',['diminui com a profundidade.','independe da profundidade.','aumenta com a profundidade.','é nula.','depende só da área.'],2,'p = p₀ + ρ·g·h: quanto maior a profundidade h, maior a pressão.'),
+Q(N,'Física: eletricidade','Um resistor de 4 Ω submetido a 12 V é percorrido por corrente de',['3 A.','48 A.','8 A.','0,33 A.','16 A.'],0,'Pela lei de Ohm, i = V/R = 12 ÷ 4 = 3 A.'),
+Q(N,'Física: dinâmica','Quando um ônibus freia bruscamente, os passageiros são projetados para a frente por causa da',['gravidade.','inércia.','força de atrito do ar.','pressão atmosférica.','energia térmica.'],1,'Pela primeira lei de Newton, o corpo tende a manter seu estado de movimento.'),
+Q(N,'Física: ondas','Vemos o relâmpago antes de ouvir o trovão porque',['o som é mais rápido que a luz.','a luz se propaga muito mais rápido que o som.','o trovão ocorre antes.','o som não se propaga no ar.','a luz tem menor frequência.'],1,'A luz viaja a cerca de 300.000 km/s, e o som, a cerca de 340 m/s no ar.'),
+Q(N,'Química: soluções','Dissolvendo 20 g de sal em água até completar 200 mL de solução, a concentração é de',['0,1 g/L.','10 g/L.','4 g/L.','40 g/L.','100 g/L.'],4,'200 mL = 0,2 L, logo C = 20 ÷ 0,2 = 100 g/L.'),
+Q(N,'Química: ligações','A molécula de água (H₂O) é',['apolar, de geometria linear.','iônica.','polar, de geometria angular.','metálica.','formada por um só elemento.'],2,'A geometria angular e a diferença de eletronegatividade geram um polo negativo no oxigênio.'),
+Q(N,'Química ambiental','A camada de ozônio é importante porque',['produz o oxigênio que respiramos.','aquece a superfície.','filtra grande parte da radiação ultravioleta.','forma as nuvens.','é a fonte da chuva ácida.'],2,'Os CFCs a destroem. Isso levou ao Protocolo de Montreal.'),
+/* ---------- Lote 4: Matemática ---------- */
+Q(M,'Porcentagem','Um salário de R$ 2.000,00 recebeu aumento de 10%. O novo valor é',['R$ 2.010,00.','R$ 2.100,00.','R$ 2.200,00.','R$ 2.020,00.','R$ 2.500,00.'],2,'10% de 2.000 = 200, logo o salário passa a R$ 2.200,00.'),
+Q(M,'Regra de três','Se 5 canetas custam R$ 12,50, oito canetas custam',['R$ 18,00.','R$ 25,00.','R$ 15,00.','R$ 22,00.','R$ 20,00.'],4,'Cada caneta custa 2,50. Oito canetas: 8 × 2,50 = R$ 20,00.'),
+Q(M,'Geometria plana','Em um triângulo, dois ângulos medem 50° e 60°. O terceiro mede',['60°.','80°.','100°.','70°.','90°.'],3,'A soma dos ângulos internos é 180°: 180 − 110 = 70°.'),
+Q(M,'Geometria plana','A área de um triângulo de base 10 cm e altura 6 cm é',['16 cm².','30 cm².','60 cm².','120 cm².','8 cm².'],1,'A = (b × h) ÷ 2 = 60 ÷ 2 = 30 cm².'),
+Q(M,'Funções','O zero da função f(x) = 2x − 6 é',['−3.','6.','2.','0.','3.'],4,'2x − 6 = 0, então x = 3.'),
+Q(M,'Probabilidade','Lançando uma moeda honesta duas vezes, a probabilidade de saírem duas caras é',['1/2.','1/4.','1/3.','2/3.','1/8.'],1,'(1/2) × (1/2) = 1/4.'),
+Q(M,'Estatística','Em uma disciplina, a nota 6 tem peso 2 e a nota 9 tem peso 3. A média ponderada é',['7,5.','8,0.','7,8.','7,0.','8,5.'],2,'(6×2 + 9×3) ÷ 5 = 39 ÷ 5 = 7,8.'),
+Q(M,'Matemática financeira','Uma camiseta de R$ 80,00 tem desconto de 25%. O preço final é',['R$ 60,00.','R$ 55,00.','R$ 65,00.','R$ 20,00.','R$ 70,00.'],0,'25% de 80 = 20, e 80 − 20 = R$ 60,00.'),
+Q(M,'Análise combinatória','O número de comissões de 2 pessoas que se formam com 5 candidatos é',['5.','20.','25.','10.','15.'],3,'A ordem não importa: C(5,2) = 5×4 ÷ 2 = 10.'),
+Q(M,'Progressões','O quinto termo da progressão geométrica 2, 6, 18, … é',['54.','108.','162.','486.','90.'],2,'A razão é 3: a₅ = 2 × 3⁴ = 162.'),
+Q(M,'Geometria espacial','A área total da superfície de um cubo de aresta 3 cm é',['27 cm².','36 cm².','18 cm².','54 cm².','81 cm².'],3,'São 6 faces de 3 × 3 = 9 cm², logo 6 × 9 = 54 cm².'),
+Q(M,'Álgebra','O menor número inteiro que satisfaz 2x − 3 > 7 é',['5.','6.','4.','7.','10.'],1,'2x > 10, logo x > 5. O menor inteiro é 6.'),
+Qf('2016',H,'História do Brasil','Segundo o texto sobre a África Ocidental, as mulheres comerciantes se destacam pela perícia, autonomia e mobilidade. Isso se relaciona, no Brasil escravista dos séculos XVIII e XIX, à',['restrição ao comércio ambulante por africanos escravizados.','convivência entre homens e mulheres livres no pequeno comércio.','presença de mulheres negras no comércio de rua de produtos e alimentos.','dissolução dos hábitos culturais dos escravizados.','entrada de imigrantes portugueses no pequeno comércio urbano.'],2,'Escravizadas e libertas, as “negras de tabuleiro” vendiam alimentos e produtos nas ruas das cidades coloniais, como as comerciantes africanas.'),
+Qf('2016',H,'História geral','Polanyi: com a industrialização, trabalho, terra e dinheiro precisaram ser “organizados para a venda no mercado”. Uma consequência desse processo foi a',['expansão das terras comunais.','limitação do mercado como meio de especulação.','consolidação da força de trabalho como mercadoria.','diminuição do comércio como efeito da industrialização.','adequação do dinheiro como elemento padrão das transações.'],2,'Tornar o trabalho disponível à compra é transformá-lo em mercadoria (assalariamento).'),
+Qf('2016',H,'História geral','A Operação Condor, criada no contexto das ditaduras civis-militares do Cone Sul (anos 1960–80), tinha como objetivo coordenar a',['modificação de limites territoriais.','sobrevivência de oficiais exilados.','interferência de potências mundiais.','repressão de ativistas oposicionistas.','implantação de governos nacionalistas.'],3,'Foi uma aliança entre ditaduras para perseguir, prender e eliminar opositores além das fronteiras, com base na Doutrina de Segurança Nacional.'),
+Qf('2016',H,'História do Brasil','A Justiça do Trabalho, prevista em 1934 e que só funcionou no Estado Novo (1937), teve por objetivo, nessa conjuntura,',['legitimar os protestos fabris.','ordenar os conflitos laborais.','oficializar os sindicatos plurais.','assegurar os princípios liberais.','unificar os salários profissionais.'],1,'Varguismo: o Estado passou a mediar e controlar as relações entre capital e trabalho, evitando greves e conflitos abertos.'),
+Qf('2016',H,'História do Brasil','Na Primeira República, o coronelismo era um sistema de barganhas em que o coronel controlava cargos públicos e garantia votos ao governo. Essas relações baseavam-se na',['coação das milícias locais.','estagnação da dinâmica urbana.','valorização do proselitismo partidário.','disseminação de práticas clientelistas.','centralização de decisões administrativas.'],3,'Troca de favores e cargos por votos (voto de cabresto) é a essência do clientelismo.'),
+Qf('2016',H,'Filosofia','Pirro afirmava que nada é nobre ou vergonhoso, justo ou injusto, e que os homens agem só por lei e costume. O ceticismo, conforme o texto, caracteriza-se por',['desprezar quaisquer convenções e obrigações da sociedade.','atingir o verdadeiro prazer como princípio e fim da vida feliz.','defender a indiferença e a impossibilidade de obter alguma certeza.','aceitar o determinismo e ocupar-se com a esperança transcendente.','agir de forma virtuosa e sábia para enaltecer o homem bom e belo.'],2,'O cético suspende o juízo (ataraxia): como nada é certo, adota-se a indiferença. B é epicurismo; E, ética socrática.'),
+Qf('2016',H,'Filosofia','Descartes afirma que não nos tornaríamos matemáticos ou filósofos apenas guardando demonstrações alheias, sem “formular um juízo sólido”. O conhecimento resulta, para ele, da',['investigação de natureza empírica.','retomada da tradição intelectual.','imposição de valores ortodoxos.','autonomia do sujeito pensante.','liberdade do agente moral.'],3,'Racionalismo cartesiano: saber é pensar por conta própria, não repetir autoridades.'),
+Qf('2016',H,'Geografia ambiental','O Cerrado é um dos hotspots de biodiversidade, ou seja, área onde muitas espécies estão ameaçadas por ações humanas. A necessidade de ações de conservação ali tem como causa a',['intensificação da atividade turística.','implantação de parques ecológicos.','exploração dos recursos minerais.','elevação do extrativismo vegetal.','expansão da fronteira agrícola.'],4,'Soja, pecuária e monoculturas avançaram sobre o Cerrado, principal causa da perda de vegetação nativa.'),
+Qf('2016',H,'História geral','O Apartheid (África do Sul, 1948–1994) era segregacionista. A “lei do passe”, que fuzileiros fazem valer na imagem, regulamentava o(a)',['concentração fundiária, impedindo a posse legítima da terra.','boicote econômico a produtos ingleses.','sincretismo religioso, vetando ritos dos negros.','controle sobre a movimentação, impedindo negros de transitar em certas áreas das cidades.','exclusão do mercado de trabalho.'],3,'O passe (documento) restringia a circulação da população negra em áreas reservadas a brancos.'),
+Qf('2016',N,'Física: energia','Itaipu tem 20 unidades, 14 000 MW instalados, queda de 118,4 m e vazão de 690 m³/s por unidade (g = 10 m/s²; ρ = 1 000 kg/m³). Qual a potência, em MW, não aproveitada em cada unidade?',['0','1,18','116,96','816,96','13 183,04'],2,'Teórica: P = ρghQ = 1000·10·118,4·690 ≈ 816,96 MW. Instalada por unidade: 14 000 ÷ 20 = 700 MW. Diferença: 116,96 MW.'),
+Qf('2016',N,'Física: termologia','Uma usina de 1,0 MW elétrico dissipa o dobro dessa potência em calor (2 MW) na água do rio, que só pode aquecer 3 °C. Com c = 4 kJ/(kg·°C), o fluxo mínimo de água, em kg/s, é próximo de',['42.','84.','167.','250.','500.'],2,'P = (m/t)·c·ΔT → m/t = 2000 kJ/s ÷ (4 · 3) ≈ 167 kg/s.'),
+Qf('2016',N,'Química','Na reação CH3Br + NaOH → CH3OH + NaBr, partiu-se de 142,5 g de CH3Br (95 g/mol) e 80 g de NaOH (40 g/mol) e obtiveram-se 32 g de metanol (32 g/mol). O rendimento molar é mais próximo de',['22%.','40%.','50%.','67%.','75%.'],3,'CH3Br: 1,5 mol (reagente limitante; NaOH = 2 mol). Produto: 1 mol. R = 1 ÷ 1,5 ≈ 67%.'),
+Qf('2016',N,'Física: dinâmica','Um motor a 18 rpm gira a engrenagem A (24 dentes), acoplada a B (72). C (36 dentes), no mesmo eixo de B, engrena em D (108), que move o ponteiro. A frequência do ponteiro, em rpm, é',['1.','2.','4.','81.','162.'],1,'A→B: 18 · 24/72 = 6 rpm (C gira igual a B). C→D: 6 · 36/108 = 2 rpm.'),
+Qf('2016',N,'Química','Na produção de 27 000 L de etanol são gerados 18 L de vinhaça por litro de etanol, com 60 mg/L de fósforo. A massa de fósforo, em kg, na vinhaça é mais próxima de',['1.','29.','60.','170.','1 000.'],1,'Vinhaça: 27 000 · 18 = 486 000 L. P: 486 000 · 60 mg = 29 160 000 mg ≈ 29 kg.'),
+Qf('2016',N,'Fisiologia humana','No diabetes insipidus há falha na produção ou na ação do ADH (hormônio antidiurético), que controla a reabsorção de água nos túbulos renais. Um sintoma clássico é',['alta taxa de glicose no sangue.','aumento da pressão arterial.','ganho de massa corporal.','anemia crônica.','desidratação.'],4,'Sem ADH, os rins reabsorvem pouca água: urina muito diluída e abundante, levando à desidratação e à sede intensa.'),
+Qf('2016',N,'Genética','A permuta genética (crossing-over) troca segmentos entre cromátides não irmãs na meiose. Essa troca é determinante na',['produção de indivíduos mais férteis.','transmissão de características adquiridas.','recombinação genética na formação dos gametas.','ocorrência de mutações somáticas nos descendentes.','variação do número de cromossomos da espécie.'],2,'O crossing-over gera novas combinações de alelos nos gametas, aumentando a variabilidade.'),
+Qf('2016',N,'Botânica','A seiva xilêmica sobe mesmo se a copa da planta crescesse voltada para baixo. O que garante esse transporte é a',['gutação.','gravidade.','respiração.','fotossíntese.','transpiração.'],4,'Teoria da tensão-coesão-adesão: a perda de água nas folhas (transpiração) cria tensão que puxa a coluna de água, independentemente da posição.'),
+Qf('2017',N,'Química','Três grupos de 20 ratos (200 g cada) ingerem 100 g de ração com 3 mg de pesticida por grama. DL50: diazinon 70, malation 1 000, atrazina 3 100 mg/kg. Quais grupos terão mortalidade mínima de 10 ratos?',['Somente o de atrazina.','Somente o de diazinon.','Atrazina e malation.','Diazinon e malation.','Nenhum.'],3,'Dose: 300 mg ÷ 0,2 kg = 1 500 mg/kg. Supera a DL50 do diazinon (70) e do malation (1 000), matando ≥ 50% (10 de 20). Atrazina (3 100) fica abaixo.'),
+Qf('2017',N,'Física: eletricidade','Sem amônia, a polianilina é ôhmica (gráfico: 1,0 V ↔ 2,0 × 10⁻⁶ A). Com amônia, a resistência quadruplica. Seu valor, em ohm, é',['0,5 × 10⁰.','2,0 × 10⁰.','2,5 × 10⁵.','5,0 × 10⁵.','2,0 × 10⁶.'],4,'R = U/i = 1,0 ÷ 2,0·10⁻⁶ = 5,0·10⁵ Ω. Com amônia: 4 × 5,0·10⁵ = 2,0·10⁶ Ω.'),
+Qf('2017',N,'Química','Um fóssil de 30 g emite 6 750 partículas beta por hora. Em vida, o máximo é 15 emissões/(min·g); a meia-vida do ¹⁴C é 5 730 anos. A idade do fóssil, em anos, é',['450.','1 433.','11 460.','17 190.','27 000.'],2,'Em vida: 15 · 30 = 450/min = 27 000/h. Hoje: 6 750/h = 1/4 → duas meias-vidas = 2 · 5 730 = 11 460 anos.'),
+Qf('2017',N,'Química','O AAS (180 g/mol) é feito a partir do ácido salicílico (138 g/mol), com rendimento de 50%. Para 900 mil comprimidos de 500 mg, a massa de ácido salicílico, em kg, é',['293','345','414','690','828'],3,'AAS: 900 000 · 0,5 g = 450 kg. Ácido (100%): 450 · 138/180 = 345 kg. Com rendimento de 50%: 690 kg.'),
+Qf('2017',N,'Física: cinemática','Dois carros aceleram a 1 m/s² e freiam a 5 m/s². O atento freia a 14 m/s; o desatento demora 1 s a mais. Quantos metros a mais o desatento percorre até parar?',['2,90 m','14,0 m','14,5 m','15,0 m','17,4 m'],4,'Atento: 14²/(2·5) = 19,6 m. Desatento: em 1 s acelerando percorre 14·1 + ½·1·1² = 14,5 m e chega a 15 m/s; freia 15²/10 = 22,5 m. Total 37 m. Diferença: 37 − 19,6 = 17,4 m.'),
+Qf('2017',N,'Física: eletricidade','Em um gerador de espiras girando em campo magnético, qual grandeza deve ser dobrada para dobrar a tensão máxima V mantendo constante a corrente de curto-circuito i?',['número de espiras.','frequência de giro.','intensidade do campo magnético.','área das espiras.','diâmetro do fio.'],0,'Dobrar N dobra a fem e também a resistência interna (fio com o dobro do comprimento): i = V/r permanece. Dobrar f, B ou A dobra a fem sem alterar r, e a corrente dobraria.'),
+Qf('2017',N,'Química','Na ozonólise (O3, H2O, Zn) do 1-fenil-2-metilprop-1-eno, Ph–CH=C(CH3)2, quais os produtos?',['Benzaldeído e propanona.','Propanal e benzaldeído.','2-fenil-etanal e metanal.','Benzeno e propanona.','Benzaldeído e etanal.'],0,'A dupla ligação é clivada: o carbono ligado ao anel e a H gera aldeído (benzaldeído); o carbono com dois CH3 gera cetona (propanona).'),
+Qf('2017',N,'Biologia molecular','Na PCR, o segmento de DNA que desnatura por último (exige mais calor) é o de maior número de pares G–C (3 ligações de hidrogênio). Qual segmento é o último a desnaturar? A: GGCCTTCG; B: CCTCGACT; C: AATTCCTA; D: TTACGGCG; E: CCTAGGAA.',['GGCCTTCG','CCTCGACT','AATTCCTA','TTACGGCG','CCTAGGAA'],0,'Contando G/C: A = 6; B = 5; C = 2; D = 5; E = 4. O segmento A tem mais ligações de hidrogênio.'),
+Qf('2017',N,'Genética','Gêmeas monozigóticas heterozigóticas para a distrofia de Duchenne (recessiva, ligada ao X) diferem: uma tem DMD, a outra não. Isso se explica pela',['dominância incompleta do alelo mutante.','falha na separação dos X na divisão dos embriões.','recombinação cromossômica anterior à separação dos embriões.','inativação aleatória de um dos cromossomos X, em fase posterior à divisão dos embriões.','origem paterna do X mutante em uma e materna na outra.'],3,'Nas mulheres, um X é inativado ao acaso em cada célula. Em uma gêmea inativou-se, em maior parte, o X normal; na outra, o mutante.'),
+Qf('2017',M,'Funções','A intensidade luminosa na superfície de um lago é I(x) = k·sen(x), com x entre 0° e 90°. Quando x = 30°, a intensidade se reduz a que percentual do valor máximo?',['33%','50%','57%','70%','86%'],1,'O máximo é em x = 90° (sen 90° = 1). Em 30°, sen 30° = 0,5 → 50%.'),
+Qf('2017',M,'Porcentagem','O suco usa 2/3 de polpa de morango (R$ 18,00) e 1/3 de acerola (R$ 14,70). A acerola subirá para R$ 15,30. Para manter o preço do suco, a embalagem de morango deve ter redução, em real, de',['1,20.','0,90.','0,60.','0,40.','0,30.'],4,'Custo atual: 2/3·18 + 1/3·14,70 = 12 + 4,90 = 16,90. Com acerola a 15,30: 5,10; o morango deve pesar 11,80, ou seja, 17,70 por embalagem. Redução: R$ 0,30.'),
+Qf('2017',M,'Estatística','Um instituto exige erro máximo de 0,02, com |e| < 1,96·σ/√N. Dados: P1 (σ=0,5; √N=42), P2 (0,4; 28), P3 (0,3; 24), P4 (0,2; 21), P5 (0,1; 8). Qual pesquisa pode ser usada?',['P1','P2','P3','P4','P5'],3,'Erros: P1 ≈ 0,023; P2 = 0,028; P3 ≈ 0,0245; P4 ≈ 0,0187; P5 ≈ 0,0245. Só P4 é menor que 0,02.'),
+Qf('2017',M,'Estatística','Notas e créditos: II = 8,00 (4), III = 6,00 (8), IV = 5,00 (8), V = 7,50 (10); a disciplina I tem 12 créditos e nota desconhecida. Para obter média ponderada mínima 7 (“Bom”), a nota mínima em I é',['7,00.','7,38.','7,50.','8,25.','9,00.'],3,'Total de créditos: 42; soma necessária: 42·7 = 294. As quatro notas dão 32 + 48 + 40 + 75 = 195. Logo 12x = 99 e x = 8,25.'),
+Qf('2017',M,'Escala','Uma peça em escala 1 : 400 tem volume de 25 cm³. O volume do monumento original, em m³, é',['100.','400.','1 600.','6 250.','10 000.'],2,'O volume escala com o cubo: 25 · 400³ = 25 · 64 · 10⁶ = 1,6 · 10⁹ cm³ = 1 600 m³.'),
+Qf('2017',M,'Geometria','Um viveiro retangular usa 100 m de tela nas laterais. Quais valores de X e Y maximizam a área da base?',['1 e 49','1 e 99','10 e 10','25 e 25','50 e 50'],3,'2X + 2Y = 100 → X + Y = 50. Com soma fixa, o produto XY é máximo quando X = Y = 25 (quadrado).'),
+Qf('2017',M,'Funções','Modelo da pressão arterial P(t) = A + B·cos(kt), com pressão mínima 78, máxima 120 e 90 batimentos por minuto. A função é',['P(t) = 99 + 21cos(3πt)','P(t) = 78 + 42cos(3πt)','P(t) = 99 + 21cos(2πt)','P(t) = 99 + 21cos(t)','P(t) = 78 + 42cos(t)'],0,'A = (120 + 78)/2 = 99 e B = (120 − 78)/2 = 21. Período = 60/90 = 2/3 s → k = 2π ÷ (2/3) = 3π.'),
+Qf('2017',M,'Probabilidade','Dez semáforos ficam em verde (prob. 2/3) ou vermelho (1/3), de forma independente. A probabilidade de exatamente um estar verde é',['10 × 2 / 3¹⁰','10 × 2⁹ / 3¹⁰','2¹⁰ / 3¹⁰⁰','2⁹⁰ / 3¹⁰⁰','2 / 3¹⁰'],0,'Distribuição binomial: C(10,1) · (2/3) · (1/3)⁹ = 10 · 2 / 3¹⁰.'),
+Qf('2017',M,'Análise combinatória','Uma página exige senha de um dentre cinco formatos (L = letra, 26 opções; D = dígito, 10). O número de senhas deve ser maior que 10⁶ e no máximo 2 · 10⁶. Formatos: I LDDDDD; II DDDDDD; III LLDDDD; IV DDDDD; V LLLDD. O mais adequado é',['I.','II.','III.','IV.','V.'],4,'I = 2,6 · 10⁶ (excede); II = 10⁶ (não é superior); III = 6,76 · 10⁶; IV = 10⁵; V = 26³ · 10² = 1 757 600, que está entre 10⁶ e 2 · 10⁶.'),
+Qf('2017',M,'Análise combinatória','Em um torneio, cada jogador joga uma vez com cada outro. Com 2, 3, 4, 5, 6 e 7 jogadores há 1, 3, 6, 10, 15 e 21 partidas. Com 8 jogadores, quantas partidas?',['64','56','49','36','28'],4,'O padrão é C(n,2) = n(n−1)/2: 8 · 7 / 2 = 28 (ou 21 + 7).'),
+Qf('2017',M,'Probabilidade','Chance de atraso: 50% se chover e 25% se não chover. A previsão é de 30% de chuva. A probabilidade de atraso é',['0,075','0,150','0,325','0,600','0,800'],2,'Probabilidade total: 0,3·0,5 + 0,7·0,25 = 0,15 + 0,175 = 0,325.'),
+Qf('2017',M,'Grandezas','Um pivô de três torres tem torres T1, T2 e T3 a 50 m, 100 m e 150 m da base. O pivô deve dar uma volta em 25 h (π ≈ 3). As velocidades de T1, T2 e T3, em m/h, devem ser',['12, 24 e 36.','6, 12 e 18.','2, 4 e 6.','300, 1 200 e 2 700.','600, 2 400 e 5 400.'],0,'v = 2πr/T: T1 = 2·3·50/25 = 12; T2 = 2·3·100/25 = 24; T3 = 2·3·150/25 = 36 m/h.'),
+Qf('2017',M,'Grandezas','Às 17h15 começa uma chuva constante; às 18h a piscina vazia tem 20 cm. Abre-se o ralo (vazão constante). Às 18h40 a chuva cessa e o nível é 15 cm. O esvaziamento total ocorre entre',['19h30 e 20h10.','19h20 e 19h30.','19h10 e 19h20.','19h e 19h10.','18h40 e 19h.'],3,'Chuva: 20 cm em 45 min = 4/9 cm/min. De 18h a 18h40 (40 min) entram ≈ 17,8 cm; o nível cai 5 cm; o ralo tira ≈ 22,8 cm → ≈ 0,57 cm/min. Restando 15 cm: 15 ÷ 0,57 ≈ 26 min → ≈ 19h06.'),
+Qf('2025',N,'Química','O carvão ativado é mais eficiente que o carvão comum para remover contaminantes por adsorção. Qual característica explica essa eficiência?',['Massa.','Dureza.','Densidade.','Superfície.','Condutividade.'],3,'Seus poros (macro, meso e microporos) aumentam muito a área de superfície disponível para adsorver impurezas.'),
+Qf('2025',N,'Ecologia','Aves aquáticas começaram a se afogar por encharcamento das penas. Isso estava associado à redução da',['dilatação do papo.','reposição de penas das asas.','secreção da glândula uropigial.','formação da membrana natatória.','largura das cavidades de ossos pneumáticos.'],2,'A glândula uropigial produz óleo que impermeabiliza as penas e permite a flutuação.'),
+Qf('2025',N,'Física: eletricidade','Uma régua elétrica a 110 V suporta 20 A (2 200 W). Já ligados: computador (250 W) e condicionador de ar (1 100 W). Tentativas, uma por vez, nesta ordem: impressora (660 W), cafeteira (900 W), luminária (5 W), secador (750 W). Se o fusível rompido inutiliza a régua, quantas atividades ela realiza?',['4','3','2','1','0'],3,'Base: 1 350 W. Impressora: 2 010 W (OK). Cafeteira: 2 250 W > 2 200 W (fusível rompe). As seguintes não são possíveis. Total: 1 atividade.'),
+Qf('2025',N,'Física: dinâmica','Um depósito tem laje de 50 m² que suporta até 10⁴ Pa. Produto de densidade 1 250 kg/m³ (g = 10 m/s²). A altura máxima de empilhamento, em m, é',['0,16.','0,50.','0,80.','1,60.','8,00.'],2,'P = ρ·g·h → h = 10⁴ ÷ (1 250 · 10) = 0,8 m. A área não altera a pressão.'),
+Qf('2025',N,'Química','Para o decaimento do cobalto-60 (meia-vida de 5,3 anos), restam, de 2,00 mg e após 26,5 anos, quantos mg?',['2,00.','1,00.','0,40.','0,13.','0,06.'],4,'26,5 ÷ 5,3 = 5 meias-vidas. 2,00 ÷ 2⁵ = 2 ÷ 32 ≈ 0,06 mg.'),
+Qf('2025',N,'Química','TiO2 (s) + 2 Cl2 (g) ⇌ TiCl4 (g) + O2 (g), ΔH = +175 kJ/mol. Como favorecer a formação de TiCl4 no equilíbrio?',['Aumentando a pressão total.','Diminuindo a temperatura.','Aumentando a pressão parcial de O2.','Aumentando a pressão parcial de Cl2.','Variando a quantidade de TiO2.'],3,'Mais reagente (Cl2) desloca o equilíbrio para os produtos. A pressão total não muda nada (2 mol gasosos de cada lado); a reação é endotérmica (esfriar atrapalha); O2 é produto; TiO2 é sólido.'),
+Qf('2025',N,'Química','Para clarear prata escurecida (Ag2S) usa-se papel alumínio e NaCl. Com potenciais de redução Ag2S/Ag = −0,69 V, O2/H2O = +1,23 V e Al³⁺/Al = −1,68 V, as ddp do escurecimento e do clareamento são, respectivamente,',['+0,54 V e +2,37 V.','+1,92 V e +0,99 V.','−0,15 V e +5,43 V.','+2,61 V e +1,29 V.','+0,15 V e −1,29 V.'],1,'Escurecimento: O2 oxida a prata: 1,23 − (−0,69) = +1,92 V. Clareamento: Al oxida e reduz Ag2S: −0,69 − (−1,68) = +0,99 V.'),
+Qf('2025',N,'Química','Para produzir 4,00 L de gás a 180 °C (453 K) e 1,00 atm, a chefe usa NH4HCO3 (79 g/mol), que gera 3 gases (NH3, CO2 e H2O), com rendimento de 80% (R = 0,082). A massa a usar é mais próxima de',['2,3 g.','3,5 g.','5,9 g.','6,8 g.','8,9 g.'],1,'n gases = PV/RT = 4 ÷ (0,082 · 453) ≈ 0,108 mol. Cada mol de sal gera 3 mol: 0,036 mol teóricos; com 80%: 0,036 ÷ 0,8 = 0,045 mol × 79 ≈ 3,5 g.'),
+Qf('2025',N,'Química','O processo de produção de nióbio usa 3 Nb2O5 + 10 Al → 6 Nb + 5 Al2O3, com 10% de excesso de Al. Para produzir 9,3 kg de Nb (93 g/mol; Al = 27 g/mol), a massa de alumínio é mais próxima de',['2,7 kg.','3,0 kg.','4,1 kg.','4,5 kg.','5,0 kg.'],4,'9,3 kg de Nb = 100 mol. Al estequiométrico: 100 · 10/6 ≈ 166,7 mol; com 10% a mais: ≈ 183,3 mol × 27 g ≈ 4,95 kg ≈ 5,0 kg.'),
+Qf('2025',N,'Física: ondas','Nível sonoro n = 10·log(I/I0). Uma pessoa gritando produz 100 dB no centro do estádio. Com 10 000 pessoas gritando juntas, o ruído estimado é de',['60 dB.','104 dB.','140 dB.','400 dB.','800 dB.'],2,'As intensidades se somam: I total = 10⁴ · I. Então n = 100 + 10·log(10⁴) = 100 + 40 = 140 dB.'),
+Qf('2025',M,'Grandezas','Um carro percorre 30 km por dia, 7 dias por semana, e consome 1 m³ de GNV a cada 13 km. Cilindros: 10, 14, 17, 21, 25 m³ (preço proporcional). O menor cilindro que garante um abastecimento semanal tem capacidade, em m³, de',['10','14','17','21','25'],2,'Em uma semana: 210 km ÷ 13 ≈ 16,15 m³. O menor cilindro suficiente é o de 17 m³.'),
+Qf('2025',M,'Probabilidade','90% dos internautas brasileiros acessam redes sociais, e 60% desses são mulheres. Escolhendo ao acaso um internauta brasileiro, a probabilidade de ser um homem que acessa redes sociais é',['30/90','36/100','40/100','40/90','46/90'],1,'Homens entre os que acessam: 40% de 90% = 0,4 · 0,9 = 0,36 = 36/100.'),
+Qf('2025',M,'Porcentagem','Uma solução de 10 L tem 99,95% de S1. Retira-se S1, mantendo a quantidade de S2, até que S1 seja 99,90% da nova solução. Quantos litros de S1 são retirados?',['0,0050','0,0100','0,5000','4,9775','5,0000'],4,'S2 = 0,05% de 10 L = 0,005 L. Na nova solução S2 = 0,10%: total = 0,005 ÷ 0,001 = 5 L. Saíram 10 − 5 = 5 L de S1.'),
+Qf('2025',M,'Grandezas','Uma distribuidora enviou 10 200 L para entregar 9 900 L (300 L descartados por viagem, independente da quantidade). Para entregar o dobro do pedido (20 000 L), no mesmo caminhão, deve enviar, em L,',['20 100','20 200','20 300','20 400','20 600'],2,'O descarte por transporte é fixo (300 L). Enviar 20 000 + 300 = 20 300 L (cabe nos 30 000 L).'),
+Qf('2025',M,'Estatística','Velocidades (MB/s) em dez cidades: 390, 380, 320, 390, 340, 380, 390, 400, 350, 360. A mediana é',['360.','370.','380.','390.','400.'],2,'Ordenando: 320, 340, 350, 360, 380, 380, 390, 390, 390, 400. Mediana: (380 + 380)/2 = 380.'),
+Qf('2025',M,'Grandezas','Total de sódio por pacote: batata chips (3 × 170 mg); palitos (4 × 501 mg); multigrãos (8 × 264 mg); polvilho (6 × 175 mg); água e sal (5 × 166 mg). Qual tem a menor quantidade total de sódio?',['Batata chips.','Palitos salgados.','Biscoito multigrãos.','Biscoito de polvilho.','Biscoito de água e sal.'],0,'Totais: 510; 2 004; 2 112; 1 050; 830 mg. O menor é o da batata chips.'),
+Qf('2025',M,'Porcentagem','Em 2024 uma escola teve 280 + 80 + 20 + 20 = 400 matrículas. Para 2025 prevê-se o mesmo total, com a distribuição de 2023 (francês: 10%). O número de matrículas em francês será',['2.','12.','20.','22.','40.'],4,'10% de 400 = 40.'),
+Qf('2025',M,'Escala','Deslocamentos: I 9 cm (1:100); II 5 cm (1:300); III 5 cm (1:600); IV 3 cm (1:700); V 2 cm (1:1 000). O de maior comprimento real é',['I.','II.','III.','IV.','V.'],2,'Reais: I 9 m; II 15 m; III 30 m; IV 21 m; V 20 m.'),
+Qf('2025',M,'Regra de três','3 funcionários, 6 h/dia, produzem 720 tijolos/dia. Com 5 funcionários trabalhando 9 h/dia (mesmo ritmo por hora), a produção diária é',['800.','1 080.','1 200.','1 800.','2 520.'],3,'Ritmo: 720 ÷ (3·6) = 40 tijolos/h por funcionário. Novo: 5 · 9 · 40 = 1 800.'),
+Qf('2025',M,'Análise combinatória','O código de visitante tem 7 dígitos: andar (1 dígito), setor (2), funcionário (3) e 0 (manhã) ou 1 (tarde). Um visitante vai ao 2º andar, setor 08, funcionário 109, chegando às 10h. Qual é o código?',['0109082','0281090','1010982','2081090','2810910'],3,'Andar 2 + setor 08 + funcionário 109 + manhã 0 = 2 08 109 0 = 2081090.'),
+Qf('2025',M,'Probabilidade','Quatro celulares são devolvidos ao acaso a quatro candidatos. A probabilidade de todos receberem o seu é',['1/2','1/10','1/16','1/24','1/256'],3,'Há 4! = 24 distribuições possíveis e só 1 correta: 1/24.'),
+Qf('2025',M,'Análise combinatória','Dez casais escolhem presidente, secretário e tesoureiro, com no máximo uma pessoa por casal na diretoria. Quantas diretorias diferentes existem?',['10 × 9 × 8','20 × 18 × 16','20 × 19 × 18','10 × 9 × 8 × 2','20 × 18 × 16 × 2'],1,'O 1º cargo pode ser ocupado por 20 pessoas; ao eliminar o cônjuge, restam 18 para o 2º; depois 16 para o 3º: 20 × 18 × 16.'),
+Qf('2025',M,'Escala','Um desenho de 20 cm × 20 cm virou uma obra de 30 m × 30 m na areia, mantendo as proporções. A escala do desenho em relação à obra é',['1 : 1,5','1 : 2,25','1 : 10','1 : 100','1 : 150'],4,'30 m = 3 000 cm; 20 : 3 000 = 1 : 150.'),
+Qf('2025',M,'Porcentagem','Estacionamento com 120 vagas, despesas: R$ 14 240 de manutenção + R$ 36 de seguro por veículo (que sobe 20%). Para ter lucro de R$ 10 000, a mensalidade reajustada deve ser',['185,60.','226,09.','245,20.','268,93.','285,60.'],2,'Seguro novo: 36 · 1,2 = 43,20 → 5 184 no total. Despesas: 19 424. Arrecadação: 29 424 ÷ 120 = R$ 245,20.'),
+Qf('2025',M,'Grandezas','Uma sorveteria serve sorvete de potes de 20 000 cm³ em taças de 250 mL. Quantas taças saem de um pote cheio?',['5.','8.','50.','80.','800.'],3,'1 cm³ = 1 mL, então 20 000 mL ÷ 250 = 80 taças.'),
+Qf('2025',M,'Análise combinatória','Quatro amigos, cada um com 100 moedas, trocam em rodadas: posição 1 passa 1 moeda; 2 passa 2; 3 passa 3; 4 passa 4 para a posição 1. Depois da rodada n, quantas moedas tem quem está na posição 1?',['103 + 4n','103 + 3n','100 + 4n','100 + 3n','99 + 4n'],3,'Em cada rodada o jogador 1 dá 1 e recebe 4: saldo de +3. Logo 100 + 3n.'),
+Qf('2025',M,'Progressões','Uma corrida de 5 km tem trechos de 1 km: 272 s, 284 s, 288 s e 288 s nos quatro primeiros (1 132 s ao todo). O melhor pace é 281 s/km (1 405 s em 5 km). No 5º trecho, ele deve gastar quantos segundos a menos que no 4º?',['1','2','8','9','15'],4,'Tempo permitido no 5º trecho: 1 405 − 1 132 = 273 s. O 4º trecho levou 288 s. Diferença: 15 s.'),
+Qf('2025',M,'Porcentagem','Pagar R$ 60 000 em n parcelas iguais ou em n + 6 parcelas, sendo cada uma R$ 500 menor. O valor de n é',['18.','24.','30.','42.','48.'],1,'60 000/n − 60 000/(n+6) = 500 → n(n+6) = 720 → n = 24.'),
+Qf('2025',M,'Grandezas','Um jogador participa de 45 min (2º tempo) e percorre 4,5 km; mantém a velocidade média na prorrogação de 30 min. A distância total, em km, é',['4,5.','6,0.','7,5.','9,0.','12,0.'],2,'Velocidade: 4,5 km em 45 min. Em 30 min: 3 km. Total: 7,5 km.'),
+Qf('2025',M,'Probabilidade','Artur lança dois dados e usa o maior; João lança um. Vence quem tiver o maior número; empate é de João. Quem tem maior chance de ganhar?',['Artur, 2/3.','João, 4/9.','Artur, 91/216.','João, 91/216.','Artur, 125/216.'],4,'P(Artur perde ou empata) = P(maior dos dois ≤ João) = Σ(j/6)²/6 = 91/216. Logo Artur vence com 1 − 91/216 = 125/216 (> 1/2).'),
+Qf('2025',M,'Grandezas','A luminância é a razão entre a intensidade luminosa (candela, cd) e o quadrado da distância (m). Sua unidade de medida é',['cd/m²','m²/cd','cd/m','m/cd','m/cd²'],0,'Luminância = cd ÷ m².'),
+Qf('2024',N,'Química','A nimesulida é pouco solúvel em água, mas, tratada com uma base de Brönsted-Lowry (que captura H⁺), vira espécie carregada, mais solúvel. Na estrutura do fármaco, o grupamento capaz de reagir com a base é o grupo',['sulfonamida.','metila.','fenila.','nitro.','éter.'],0,'A base precisa de um H⁺ ácido para capturar. O grupo sulfonamida (–SO₂NH–) tem hidrogênio ácido; os demais não doam H⁺ facilmente.'),
+Qf('2024',N,'Física: termologia','Em aquecedores solares, a água aquecida nos coletores sobe até o reservatório térmico. O processo de transferência de calor dos coletores para o reservatório é a',['difusão.','absorção.','condução.','irradiação.','convecção.'],4,'A água quente, menos densa, sobe e a fria desce, formando correntes: convecção.'),
+Qf('2024',N,'Fisiologia humana','Microplásticos aderem a poluentes orgânicos apolares e lipossolúveis. Em vertebrados, essa associação se acumula preferencialmente no tecido',['ósseo.','nervoso.','epitelial.','adiposo.','sanguíneo.'],3,'Substâncias lipossolúveis se acumulam onde há gordura: o tecido adiposo.'),
+Qf('2024',N,'Fisiologia humana','Compostos nitrosos (mutagênicos) formam-se pela reação do nitrito de sódio, conservante de carnes, com ácido clorídrico, que produz ácido nitroso. Em qual órgão o processo se inicia?',['Rim.','Fígado.','Intestino.','Pâncreas.','Estômago.'],4,'O HCl está presente no suco gástrico, no estômago.'),
+Qf('2024',N,'Citologia','A citocalasina B comprometeu o formato e o movimento de células de Amoeba proteus. Qual componente celular foi afetado?',['Vacúolos.','Mitocôndrias.','Microfilamentos.','Material genético.','Membrana plasmática.'],2,'Os microfilamentos (actina) do citoesqueleto determinam a forma e o movimento ameboide da célula.'),
+Qf('2024',N,'Ecologia','Pererecas-assobiadoras emitem um som estridente nos jardins do Brooklin. Ao emitirem esse som, esses anfíbios',['indicam que estão fora de seu hábitat natural.','alertam para a presença de poluição urbana.','sinalizam superpopulação.','direcionam insetos para sua alimentação.','atraem fêmeas para o acasalamento.'],4,'A vocalização dos machos anuros é um chamado de acasalamento.'),
+Qf('2024',N,'Química','As placas de saída de emergência brilham no escuro por conter sulfeto de zinco dopado, que fosforesce após exposição à luz. O brilho é consequência de',['colisões interatômicas.','coloração dos átomos.','transições eletrônicas.','reações nucleares.','reflexão da luz.'],2,'A luz excita elétrons para níveis superiores; ao retornarem, emitem fótons (fosforescência).'),
+Qf('2024',M,'Estatística','Ao calcular a média de 4 provas, um estudante dividiu a soma por 5 e obteve 1 unidade a menos do que a média correta. O valor correto da média é',['4.','5.','6.','19.','21.'],1,'Soma S: S/4 − S/5 = 1 → S/20 = 1 → S = 20. Média correta: 20/4 = 5.'),
+Qf('2024',M,'Matemática financeira','Um enfeite usa 2 componentes X e 1 componente Y. Preços: loja I: X = 3,00 e Y = 1,00; loja II: X = 2,00 e Y = 4,00. Onde comprar?',['I, pois o valor é R$ 7,00.','I, pois o valor é R$ 4,00.','II, pois o valor é R$ 6,00.','I, pois anuncia o componente de menor preço.','II, pois X, o mais usado, é mais barato.'],0,'Loja I: 2·3 + 1 = 7. Loja II: 2·2 + 4 = 8. Menor valor: loja I, R$ 7,00.'),
+Qf('2024',M,'Progressões','Uma criança insere 3 figuras no visor e, em cada etapa seguinte, copia tudo o que está no visor e cola ao lado, até a 20ª etapa. Quantas figuras há ao final?',['3 × 2¹⁹','3 × 2²⁰','3 × 2²¹','3 × 2²⁰ − 1','3 × 2²⁰ − 3'],0,'A quantidade dobra a cada etapa: PG de razão 2 e a₁ = 3. a₂₀ = 3 · 2¹⁹.'),
+Qf('2024',M,'Funções','Um galinheiro retangular tem lados L e C. Os lados L usam tela de R$ 20/m e os outros dois, R$ 15/m. O gasto máximo é R$ 6 000 e a área deve ser a maior possível. A medida do maior lado, em m, é',['85.','100.','175.','200.','350.'],1,'40L + 30C = 6 000 → C = 200 − 4L/3. Área = L(200 − 4L/3) é máxima em L = 75, logo C = 100. O maior lado é 100 m.'),
+Qf('2024',M,'Porcentagem','O crescimento populacional de uma cidade em dez anos foi de 135,25%. A representação decimal da taxa é',['13 525,0','135,25','13,525','1,3525','0,13525'],3,'135,25% = 135,25 ÷ 100 = 1,3525.'),
+Qf('2024',M,'Estatística','Tempo (min) de leitura do contrato de seis serviços: 36, 17, 27, 13, 13, 13. O tempo médio, com uma casa decimal, é aproximadamente',['13,0.','15,0.','19,8.','20,0.','23,3.'],2,'Soma = 119; 119 ÷ 6 ≈ 19,8.'),
+Qf('2024',M,'Matemática financeira','Hoje, 5 porções custam 5 × 25 + 10 (entrega) = R$ 135,00. Com a taxa de entrega passando para R$ 15,00, qual deve ser o novo valor da porção para o total de 5 porções permanecer igual?',['12,50','20,00','24,00','30,00','37,50'],2,'5p + 15 = 135 → 5p = 120 → p = R$ 24,00.'),
+Qf('2024',M,'Grandezas','O fluxo de água na membrana é diretamente proporcional à vazão (mL/s) e inversamente proporcional à área (cm²). A unidade adequada para o fluxo é',['mL · s · cm²','mL · cm² / s','mL / (cm² · s)','cm² · s / mL','cm² / (mL · s)'],2,'φ = vazão ÷ área = (mL/s) ÷ cm² = mL/(cm² · s).'),
+Qf('2024',M,'Probabilidade','Dois semáforos ficam vermelhos 15 s a cada 60 s (prob. 15/60 cada). Reduz-se o tempo de vermelho igualmente nos dois, de modo que a probabilidade de encontrar ambos vermelhos seja 4/100. Quantos segundos foram reduzidos?',['1,35.','3,00.','9,00.','12,60.','13,80.'],1,'p² = 4/100 → p = 2/10 = 0,2. Vermelho = 0,2 · 60 = 12 s. Redução: 15 − 12 = 3 s.'),
+Qf('2024',M,'Funções','Custo total linear de produção de mochilas: 30 mochilas custam R$ 1 050; 50, R$ 1 650; 100, R$ 3 150. O custo de 80 mochilas é',['2 400,00.','2 520,00.','2 550,00.','2 700,00.','2 800,00.'],2,'Taxa: (1 650 − 1 050) ÷ 20 = R$ 30 por mochila. Para 80: 1 650 + 30 · 30 = R$ 2 550.'),
+Qf('2024',M,'Proporção','Um serviço de R$ 71 250 destina 40% a três engenheiros, proporcionalmente às horas trabalhadas: I (4 dias × 5,5 h), II (5 × 4 h) e III (6 × 2,5 h). A maior diferença entre dois valores recebidos, em reais, é',['1 000','1 500','3 500','3 800','5 250'],2,'40% de 71 250 = 28 500. Horas: 22, 20 e 15 (total 57) → R$ 500 por hora. I = 11 000; II = 10 000; III = 7 500. Maior diferença: 11 000 − 7 500 = 3 500.'),
+Qf('2018',N,'Fisiologia humana','Em caso de hipoglicemia, o glucagon (hormônio de ação catabólica) induzirá o organismo a',['realizar a fermentação lática.','metabolizar aerobicamente a glicose.','produzir aminoácidos a partir de ácidos graxos.','transformar ácidos graxos em glicogênio.','estimular a utilização do glicogênio.'],4,'O glucagon eleva a glicemia ao estimular a quebra do glicogênio hepático em glicose.'),
+Qf('2018',N,'Citologia','A proteína p53 é ativada por mutações no DNA, impedindo o avanço do ciclo celular até o reparo ou induzindo a morte da célula. A ausência dessa proteína poderá favorecer',['a redução da síntese de DNA, acelerando o ciclo.','a saída imediata do ciclo celular.','a ativação de outras proteínas, induzindo apoptose.','a manutenção da estabilidade genética.','a proliferação celular exagerada, resultando em tumor.'],4,'Sem p53, células com DNA danificado seguem se dividindo, favorecendo o câncer.'),
+Qf('2018',N,'Botânica','A atemoia é um híbrido, e recomenda-se plantá-la por enxertia. Um benefício dessa forma de plantio é a',['ampliação da variabilidade genética.','produção de frutos das duas espécies.','manutenção do genótipo da planta híbrida.','reprodução de clones das plantas parentais.','modificação do genoma decorrente da transgenia.'],2,'A enxertia é propagação assexuada: preserva o genótipo do híbrido, que se perderia na reprodução sexuada.'),
+Qf('2018',N,'Botânica','Quando a polinização depende do vento, a estratégia evolutiva que a torna mais eficiente é o(a)',['diminuição do cálice.','alongamento do ovário.','disponibilização do néctar.','intensificação da cor das pétalas.','aumento do número de estames.'],4,'Flores anemófilas produzem muito pólen, o que compensa o acaso do transporte pelo vento. Néctar e cores atraem animais.'),
+Qf('2018',N,'Física: eletricidade','O poraquê produz corrente de cerca de 2 A e voltagem de 600 V. A potência produzida é similar à de qual equipamento: exaustor (150 W), computador (300 W), aspirador (600 W), churrasqueira elétrica (1 200 W) ou secadora (3 600 W)?',['Exaustor.','Computador.','Aspirador de pó.','Churrasqueira elétrica.','Secadora de roupas.'],3,'P = U · i = 600 · 2 = 1 200 W: churrasqueira elétrica.'),
+Qf('2018',N,'Evolução','A holometabolia (ovo, larva, pupa, adulto) está relacionada a um maior número de espécies de insetos em razão da',['proteção na fase de pupa, favorecendo adultos férteis.','produção de muitos ovos, larvas e pupas.','exploração de diferentes nichos, evitando a competição entre as fases da vida.','ingestão de alimento em todas as fases.','utilização do mesmo alimento em todas as fases.'],2,'Larva e adulto vivem em hábitats e comem alimentos diferentes, ocupando nichos distintos sem competir entre si.'),
+Qf('2018',M,'Proporção','Um produtor tem 160 ha: 40 ha com produtividade 2,5 vezes a dos outros 120 ha. Para aumentar a produção total em 15%, comprará terra com a produtividade da parte de 120 ha. Qual a área mínima, em hectare?',['36','33','27','24','21'],1,'Seja p a produtividade menor. Produção: 40 · 2,5p + 120p = 220p. Aumento de 15%: 33p, ou seja, 33 ha à produtividade p.'),
+Qf('2018',M,'Escala','Um navio tem guindaste de 15 m e esteira de 90 m. No desenho (escala 1 : X), o guindaste deve ter entre 0,5 cm e 1 cm e a esteira, mais de 4 cm. Os valores possíveis de X são',['X > 1 500.','X < 3 000.','1 500 < X < 2 250.','1 500 < X < 3 000.','2 250 < X < 3 000.'],2,'Guindaste: 1 500 cm ÷ X entre 0,5 e 1 → 1 500 < X < 3 000. Esteira: 9 000 ÷ X > 4 → X < 2 250. Interseção: 1 500 < X < 2 250.'),
+Qf('2018',M,'Álgebra','Na rifa de uma festa, 80 alunos faltaram; 45 compraram 2 bilhetes, alguns 3 e muitos 1. Os que compraram 1 bilhete eram 20% dos bilhetes vendidos, que excederam em 33 o total de alunos do colégio. Quantos alunos compraram apenas um bilhete?',['34','42','47','48','79'],3,'Presentes P; bilhetes B = P + 80 + 33 = P + 113; s = 0,2B; t compraram 3. B = s + 90 + 3t e P = s + 45 + t → B = 3P − 2s − 45. Então P − s = 79 e s = 0,2(P + 113): P = 127 e s = 48.'),
+Qf('2016',M,'Escala','Um guarda-roupa de 220 × 120 × 50 cm é desenhado em escala 1 : 8 e, na impressão, a figura é reduzida em 20%. As medidas do desenho impresso (altura, largura, profundidade) são',['22,00 cm, 12,00 cm e 5,00 cm.','27,50 cm, 15,00 cm e 6,25 cm.','34,37 cm, 18,75 cm e 7,81 cm.','35,20 cm, 19,20 cm e 8,00 cm.','44,00 cm, 24,00 cm e 10,00 cm.'],0,'Na escala 1 : 8: 27,5; 15 e 6,25 cm. Reduzindo 20% (× 0,8): 22; 12 e 5 cm.'),
+Qf('2016',M,'Grandezas','Isolamento acústico: a espessura é inversamente proporcional ao quadrado da distância D à fonte e o custo é diretamente proporcional ao volume (área × espessura). Uma parede de 9 m², a 3 m da fonte, custa R$ 500. O custo para uma parede de área A, a D metros, é',['500 · 81 / (A · D²)','500 · A / D²','500 · D² / A','500 · A · D² / 81','500 · 3 · D² / A'],1,'Custo = k · A / D². Com A = 9 e D = 3: k · 9/9 = 500 → k = 500. Logo, custo = 500 · A / D².')
+].map((q,i)=>({id:i+1,...q}));
+
+/* ===== Utilitários ===== */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LET="ABCDE";
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const telas=["filtros","prova","resultado"];
+const mostrar=t=>{telas.forEach(n=>$("#tela-"+n).hidden=n!==t);window.scrollTo(0,0)};
+
+/* ===== Estado ===== */
+const F={abertas:new Set(),assuntos:new Set(),qtd:10,modo:"treino"}; // filtros
+const S={qs:[],resp:[],i:0,confirmar:false};                        // simulado
+
+/* ===== Filtros ===== */
+/* Matérias e tópicos: cada tópico (campo "assunto") pertence a uma matéria.
+   Tópico novo? Liste-o aqui ou defina "materia" direto na questão. */
+const MATERIAS={
+ 'Português':['Gramática','Pontuação','Semântica','Coesão textual','Figuras de linguagem','Funções da linguagem','Gêneros textuais','Variação linguística','Intertextualidade','Produção textual','Linguagem não verbal','Leitura e mídia'],
+ 'Literatura':['Literatura brasileira'],'Artes':['Artes'],'Educação Física':['Educação Física'],
+ 'História':['História do Brasil','História geral'],
+ 'Geografia':['Geografia','Geografia do Brasil','Geografia urbana','Geografia ambiental','Geografia econômica','Geografia humana','Cartografia'],
+ 'Filosofia':['Filosofia','Filosofia política'],'Sociologia':['Sociologia'],
+ 'Biologia':['Ecologia','Biologia: fotossíntese','Genética','Evolução','Imunologia','Citologia','Fisiologia humana','Saúde pública','Biologia molecular','Botânica'],
+ 'Física':['Física: cinemática','Física: eletricidade','Física: ondas','Física: dinâmica','Física: energia','Física: óptica','Física: termologia','Física: hidrostática'],
+ 'Química':['Química','Química ambiental','Química: separação de misturas','Química: ligações','Química: propriedades','Química: soluções'],
+ 'Matemática':['Funções','Porcentagem','Probabilidade','Regra de três','Estatística','Geometria plana','Geometria','Geometria espacial','Matemática financeira','Análise combinatória','Álgebra','Escala','Progressões','Proporção','Trigonometria','Sistemas lineares','Potências','Grandezas']};
+const MAT_DE={};Object.entries(MATERIAS).forEach(([m,ts])=>ts.forEach(t=>MAT_DE[t]=m));
+QUESTOES.forEach(q=>{q.materia=q.materia||MAT_DE[q.assunto]||q.area});
+const topicosDe=m=>[...new Set(QUESTOES.filter(q=>q.materia===m).map(q=>q.assunto))];
+const matList=[...new Set([...Object.keys(MATERIAS),...QUESTOES.map(q=>q.materia)])].filter(m=>topicosDe(m).length);
+const rotulo=(a,m)=>{let t=a.replace(/^[^:]+:\s*/,'');if(t===m)t='Geral';return t.charAt(0).toUpperCase()+t.slice(1)};
+function renderMaterias(){
+  $('#f-materias').replaceChildren(...matList.map(m=>{
+    const ts=topicosDe(m),total=QUESTOES.filter(q=>q.materia===m).length;
+    const sel=ts.filter(t=>F.assuntos.has(t)).length,aberta=F.abertas.has(m),todos=sel===ts.length;
+    const d=document.createElement('div');d.className='mat'+(sel?' on':'');
+    const h=document.createElement('div');h.className='mat-h';
+    const b=document.createElement('button');b.type='button';b.className='mat-t';b.setAttribute('aria-expanded',aberta);
+    b.innerHTML=`<span>${aberta?'▾':'▸'}</span><b>${esc(m)}</b><span class="n">${total} questões · ${ts.length} tópicos${sel?` · ${sel} selecionado(s)`:''}</span>`;
+    b.onclick=()=>{toggle(F.abertas,m);renderFiltros()};
+    const t=chip(todos?'Limpar':'Selecionar tudo',false,()=>{ts.forEach(x=>todos?F.assuntos.delete(x):F.assuntos.add(x));renderFiltros()});
+    h.append(b,t);d.append(h);
+    if(aberta){const c=document.createElement('div');c.className='chips mat-c';
+      c.append(...ts.map(x=>chip(`${rotulo(x,m)} (${QUESTOES.filter(q=>q.assunto===x).length})`,F.assuntos.has(x),()=>{toggle(F.assuntos,x);renderFiltros()})));d.append(c)}
+    return d}));
+}
+const pool=()=>QUESTOES.filter(q=>!F.assuntos.size||F.assuntos.has(q.assunto));
+
+function chip(label,pressed,fn){const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=label;b.setAttribute("aria-pressed",pressed);b.onclick=fn;return b}
+function toggle(set,v){set.has(v)?set.delete(v):set.add(v)}
+
+function renderFiltros(){
+  renderMaterias();
+
+
+
+  const custom=$("#qtd-custom").value;
+  $("#f-qtd").replaceChildren(...[5,10,20,45,90].map(n=>chip(n,!custom&&F.qtd===n,()=>{F.qtd=n;$("#qtd-custom").value="";renderFiltros()})));
+  $("#disp").textContent=pool().length;
+}
+$("#qtd-custom").oninput=e=>{const v=parseInt(e.target.value,10);if(v>0)F.qtd=v;renderFiltros()};
+$("#f-modo").onclick=e=>{const b=e.target.closest("button");if(!b)return;F.modo=b.dataset.m;
+  $("#f-modo").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
+
+/* ===== Simulado ===== */
+function iniciar(){
+  const p=pool();
+  if(!p.length){$("#aviso").textContent="Nenhuma questão com esses filtros. Ajuste a área ou o assunto.";return}
+  $("#aviso").textContent="";
+  S.qs=shuffle(p.slice()).slice(0,Math.min(F.qtd,p.length));
+  S.resp=Array(S.qs.length).fill(null);S.i=0;S.confirmar=false;
+  $("#p-modo").textContent=F.modo==="treino"?"Modo Treino":"Modo Prova";
+  mostrar("prova");renderQuestao();
+}
+
+function renderQuestao(){
+  const q=S.qs[S.i],r=S.resp[S.i],n=S.qs.length,treino=F.modo==="treino",travada=treino&&r!==null;
+  $("#p-label").textContent=`Questão ${S.i+1} de ${n}`;
+  $("#p-bar").style.width=((S.i+1)/n*100)+"%";
+  $("#aviso2").textContent="";S.confirmar=false;
+  const alts=q.alternativas.map((t,k)=>{
+    let cls="alt";
+    if(travada){if(k===q.correta)cls+=" ok";else if(k===r)cls+=" bad"}
+    else if(r===k)cls+=" sel";
+    return `<li><button type="button" class="${cls}" data-k="${k}" ${travada?"disabled":""}><span class="l">${LET[k]}</span><span>${esc(t)}</span></button></li>`}).join("");
+  $("#questao").innerHTML=
+    `<div class="meta">${esc(q.materia)} · ${esc(rotulo(q.assunto,q.materia))}${q.fonte?` · ENEM ${q.fonte}`:''}</div>`+
+    (q.texto?`<blockquote class="texto">${esc(q.texto)}</blockquote>`:"")+
+    `<p class="enun">${esc(q.enunciado)}</p><ul class="alts">${alts}</ul>`+
+    (travada?`<div class="expl"><b>${r===q.correta?"Correto!":"Incorreto."} Gabarito: ${LET[q.correta]}.</b><br>${esc(q.explicacao)}</div>`:"");
+  $("#b-ant").disabled=S.i===0;
+  $("#b-prox").hidden=S.i===n-1;
+}
+
+$("#questao").onclick=e=>{
+  const b=e.target.closest(".alt");if(!b||b.disabled)return;
+  S.resp[S.i]=+b.dataset.k;renderQuestao();
+};
+$("#b-ant").onclick=()=>{S.i--;renderQuestao()};
+$("#b-prox").onclick=()=>{S.i++;renderQuestao()};
+$("#b-fim").onclick=()=>{
+  const vazias=S.resp.filter(r=>r===null).length;
+  if(vazias&&!S.confirmar){S.confirmar=true;$("#aviso2").textContent=`Faltam ${vazias} questão(ões) sem resposta. Clique em Finalizar Simulado de novo para confirmar.`;return}
+  resultado();
+};
+
+/* ===== Resultado ===== */
+function resultado(){
+  const n=S.qs.length,ac=S.qs.filter((q,i)=>S.resp[i]===q.correta).length;
+  const br=S.resp.filter(r=>r===null).length,er=n-ac-br,pct=Math.round(ac/n*100);
+  $("#resumo").innerHTML=
+    `<div class="stat"><b>${n}</b>Questões</div><div class="stat"><b>${ac}</b>Acertos</div>`+
+    `<div class="stat"><b>${er}</b>Erros</div><div class="stat"><b>${br}</b>Em branco</div>`+
+    `<div class="stat pct"><b>${pct}%</b>Aproveitamento</div>`;
+  $("#gabarito").innerHTML=S.qs.map((q,i)=>{
+    const r=S.resp[i],ok=r===q.correta;
+    return `<div class="item"><div class="meta">Questão ${i+1} · ${esc(q.materia)} · ${esc(rotulo(q.assunto,q.materia))}${q.fonte?` · ENEM ${q.fonte}`:''}</div>
+      <span class="badge ${ok?"ok":"bad"}">${ok?"Correto":"Incorreto"}</span>
+      <p class="enun" style="font-size:1rem">${esc(q.enunciado)}</p>
+      <p><b>Sua resposta:</b> ${r===null?"não respondida":`${LET[r]}) ${esc(q.alternativas[r])}`}</p>
+      <p><b>Gabarito:</b> ${LET[q.correta]}) ${esc(q.alternativas[q.correta])}</p>
+      <div class="expl"><b>Resolução comentada:</b> ${esc(q.explicacao)}</div></div>`}).join("");
+  mostrar("resultado");
+}
+$("#b-refazer").onclick=iniciar;
+$("#b-novo").onclick=()=>{mostrar("filtros");renderFiltros()};
+$("#btn-iniciar").onclick=iniciar;
+
+/* ===== Tema: automático / claro / escuro ===== */
+const TEMAS=['auto','light','dark'],TXT={auto:'🌓 Automático',light:'☀️ Claro',dark:'🌙 Escuro'};
+let tema='auto';
+try{const t=localStorage.getItem('enem-tema');if(TEMAS.includes(t))tema=t}catch(e){}
+function aplicarTema(){
+  const r=document.documentElement;
+  tema==='auto'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',tema);
+  $('#tema').textContent=TXT[tema];
+  $('#tema').setAttribute('aria-label','Tema atual: '+TXT[tema]+'. Toque para alternar.');
+}
+$('#tema').onclick=()=>{tema=TEMAS[(TEMAS.indexOf(tema)+1)%3];try{localStorage.setItem('enem-tema',tema)}catch(e){}aplicarTema()};
+aplicarTema();
+renderFiltros();
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GlobalLingo – Tradutor</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#fbf9f5; --card:#ffffff; --field:#f5f2ec; --line:#e5e1d8;
+    --text:#1f1e1d; --muted:#6e6a61; --accent:#c4623f; --accent-h:#b05535; --accent-soft:rgba(196,98,63,.12);
+  }
+  :root[data-theme="dark"] {
+    --bg:#181715; --card:#22201d; --field:#1b1a18; --line:#34312c;
+    --text:#f3f1ec; --muted:#a09b90; --accent:#da7756; --accent-h:#e38666; --accent-soft:rgba(218,119,86,.15);
+  }
+  *, *::before, *::after { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); transition:background .25s,color .25s; -webkit-font-smoothing:antialiased; }
+  .serif { font-family:'Newsreader',Georgia,serif; }
+  .muted { color:var(--muted); } .accent { color:var(--accent); }
+  button { font:inherit; cursor:pointer; background:none; border:0; color:inherit; }
+  :is(button,select,input,textarea):focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+  header.top { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px clamp(16px,4vw,32px); background:var(--bg); border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .logo { width:36px; height:36px; border-radius:12px; display:grid; place-items:center; background:var(--accent-soft); color:var(--accent); }
+  .brand b { font-family:'Newsreader',serif; font-style:italic; font-weight:400; font-size:1.55rem; line-height:1; }
+  .actions { display:flex; gap:8px; }
+
+  main { max-width:1100px; margin:0 auto; padding:32px clamp(16px,4vw,32px); display:flex; flex-direction:column; gap:24px; }
+  h1 { font-family:'Newsreader',serif; font-weight:400; font-size:clamp(1.9rem,4vw,2.5rem); letter-spacing:-.01em; margin:0; }
+  main > section > p { margin:8px 0 0; font-size:.9rem; }
+
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; }
+  .langs { display:grid; gap:12px; padding:16px; grid-template-columns:1fr auto 1fr; align-items:end; }
+  .langs label { display:block; font-size:.75rem; font-weight:600; color:var(--muted); margin-bottom:6px; }
+  .field { width:100%; background:var(--field); border:1px solid var(--line); border-radius:12px; padding:9px 12px; font:inherit; font-size:.875rem; color:var(--text); }
+
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-size:.8rem; font-weight:500; padding:7px 13px; border:1px solid var(--line); border-radius:10px; transition:background .15s,border-color .15s; }
+  .btn:hover { border-color:var(--accent); background:var(--accent-soft); }
+  .btn-main { background:var(--accent); border-color:var(--accent); color:#fff; padding:10px 20px; font-size:.9rem; border-radius:12px; }
+  .btn-main:hover { background:var(--accent-h); }
+  .btn-main:disabled { opacity:.6; cursor:wait; }
+
+  .panels { display:grid; gap:24px; grid-template-columns:1fr 1fr; }
+  .panel { display:flex; flex-direction:column; }
+  .panel > header, .panel > footer { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 16px; }
+  .panel > header { border-bottom:1px solid var(--line); } .panel > footer { border-top:1px solid var(--line); }
+  .panel h2 { font-size:.875rem; font-weight:600; margin:0; }
+  .panel .tools { display:flex; gap:4px; }
+  textarea, #output { flex:1; min-height:240px; padding:16px; font:inherit; font-size:.95rem; line-height:1.65; }
+  textarea { width:100%; resize:vertical; background:transparent; border:0; color:var(--text); }
+  textarea:focus-visible { outline:none; }
+  #output { white-space:pre-wrap; font-family:'Newsreader',Georgia,serif; font-size:1.05rem; }
+  .link { font-size:.75rem; color:var(--muted); } .link:hover { text-decoration:underline; }
+
+  dialog { width:min(92%,440px); padding:20px; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:16px; }
+  dialog::backdrop { background:rgba(0,0,0,.55); }
+  dialog h3 { font-family:'Newsreader',serif; font-weight:400; font-size:1.3rem; margin:0 0 4px; }
+  dialog p { font-size:.78rem; margin:0 0 12px; line-height:1.5; }
+  .row { display:flex; justify-content:space-between; gap:8px; margin-top:14px; }
+
+  #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); padding:9px 16px; font-size:.85rem; box-shadow:0 8px 24px rgba(0,0,0,.18); opacity:0; pointer-events:none; transition:opacity .2s; }
+
+  @media (max-width:760px) { .panels { grid-template-columns:1fr; } .langs { grid-template-columns:1fr; } #swapBtn { justify-self:center; } .hide-sm { display:none; } }
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><div class="logo"><i class="fa-solid fa-globe"></i></div><b>GlobalLingo</b></div>
+  <div class="actions">
+    <button id="limitBtn" class="btn" title="Limite diário de tradução"><i class="fa-solid fa-gauge muted"></i><span class="hide-sm">Limite diário</span></button>
+    <button id="themeBtn" class="btn" aria-label="Alternar tema"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h1>Tradutor de idiomas</h1>
+    <p class="muted">Digite qualquer texto e escolha o idioma. Não precisa de conta nem de chave de API.</p>
+  </section>
+
+  <section class="card langs">
+    <div><label for="src">De</label><select id="src" class="field"></select></div>
+    <button id="swapBtn" class="btn" title="Inverter idiomas" aria-label="Inverter idiomas"><i class="fa-solid fa-right-left"></i></button>
+    <div><label for="dst">Para</label><select id="dst" class="field"></select></div>
+  </section>
+
+  <section class="panels">
+    <article class="card panel">
+      <header><h2>Texto original</h2><button id="clearBtn" class="link"><i class="fa-solid fa-eraser"></i> Limpar</button></header>
+      <textarea id="input" placeholder="Digite ou cole o texto aqui…" aria-label="Texto original"></textarea>
+      <footer>
+        <span id="count" class="muted" style="font-size:.75rem">0 caracteres</span>
+        <button id="runBtn" class="btn btn-main"><i class="fa-solid fa-language"></i><span>Traduzir</span></button>
+      </footer>
+    </article>
+
+    <article class="card panel">
+      <header>
+        <h2>Tradução</h2>
+        <div class="tools">
+          <button id="ttsBtn" class="btn" title="Ler em voz alta" aria-label="Ler em voz alta"><i class="fa-solid fa-volume-high"></i></button>
+          <button id="copyBtn" class="btn" title="Copiar" aria-label="Copiar"><i class="fa-regular fa-copy"></i></button>
+          <button id="dlBtn" class="btn" title="Baixar em Markdown" aria-label="Baixar em Markdown"><i class="fa-solid fa-download"></i></button>
+        </div>
+      </header>
+      <div id="output" aria-live="polite"></div>
+      <footer><span id="status" class="muted" style="font-size:.75rem">Tradução automática pelo MyMemory</span></footer>
+    </article>
+  </section>
+</main>
+
+<dialog id="limitDialog">
+  <h3>Limite diário</h3>
+  <p class="muted">O serviço gratuito traduz até 5.000 caracteres por dia sem identificação. Informando um e-mail, o limite sobe para 50.000. Não há cadastro nem confirmação, e o e-mail fica salvo só neste navegador.</p>
+  <input id="emailInput" type="email" class="field" placeholder="voce@exemplo.com (opcional)" autocomplete="email">
+  <div class="row">
+    <button id="limitClear" class="btn">Remover e-mail</button>
+    <div style="display:flex;gap:8px"><button id="limitCancel" class="btn">Cancelar</button><button id="limitSave" class="btn btn-main" style="padding:7px 14px;font-size:.8rem">Salvar</button></div>
+  </div>
+</dialog>
+
+<div id="toast" class="card" role="status"></div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const store = {
+    get: k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+    del: k => { try { localStorage.removeItem(k); } catch {} }
+  };
+
+  const API = 'https://api.mymemory.translated.net/get';
+  const MAX_BYTES = 450; // a API aceita até 500 bytes por pedido
+  const AUTO = ['Detectar idioma', 'Autodetect'];
+  // [rótulo, código da API / voz]
+  const LANGS = [
+    ['Português (Brasil)', 'pt-BR'], ['Português (Portugal)', 'pt-PT'], ['Inglês (EUA)', 'en-US'], ['Inglês (Reino Unido)', 'en-GB'],
+    ['Espanhol', 'es-ES'], ['Francês', 'fr-FR'], ['Alemão', 'de-DE'], ['Italiano', 'it-IT'], ['Japonês', 'ja-JP'],
+    ['Coreano', 'ko-KR'], ['Mandarim', 'zh-CN'], ['Russo', 'ru-RU'], ['Árabe', 'ar-SA'], ['Hindi', 'hi-IN'],
+    ['Holandês', 'nl-NL'], ['Turco', 'tr-TR'], ['Polonês', 'pl-PL'], ['Sueco', 'sv-SE'], ['Grego', 'el-GR'], ['Hebraico', 'he-IL']
+  ];
+  const code = label => (LANGS.find(l => l[0] === label) || [])[1];
+
+  const add = (sel, label, value) => sel.add(new Option(label, value));
+  add($('src'), AUTO[0], AUTO[1]);
+  LANGS.forEach(([n, c]) => { add($('src'), n, c); add($('dst'), n, c); });
+  $('src').value = AUTO[1]; $('dst').value = 'en-US';
+
+  let result = '', toastTimer;
+  const toast = msg => {
+    const t = $('toast'); t.textContent = msg; t.style.opacity = 1;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.style.opacity = 0, 2800);
+  };
+  const labelOf = sel => sel.options[sel.selectedIndex].text;
+
+  /* Tema */
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    $('themeIcon').className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    store.set('gl_theme', theme);
+  }
+  applyTheme(store.get('gl_theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  $('themeBtn').onclick = () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+
+  /* E-mail opcional (aumenta o limite diário) */
+  $('limitBtn').onclick = () => { $('emailInput').value = store.get('gl_email'); $('limitDialog').showModal(); };
+  $('limitCancel').onclick = () => $('limitDialog').close();
+  $('limitSave').onclick = () => {
+    const v = $('emailInput').value.trim();
+    if (v && !$('emailInput').checkValidity()) return toast('E-mail inválido');
+    v ? store.set('gl_email', v) : store.del('gl_email');
+    $('limitDialog').close(); toast(v ? 'Limite diário ampliado para 50.000 caracteres' : 'Usando o limite padrão');
+  };
+  $('limitClear').onclick = () => { store.del('gl_email'); $('limitDialog').close(); toast('E-mail removido'); };
+
+  /* Entrada */
+  const updateCount = () => $('count').textContent = `${$('input').value.length} caracteres`;
+  $('input').addEventListener('input', updateCount);
+  $('input').addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') $('runBtn').click(); });
+  $('clearBtn').onclick = () => { $('input').value = ''; updateCount(); setResult(''); };
+  $('swapBtn').onclick = () => {
+    if ($('src').value === AUTO[1]) return toast('Escolha o idioma de origem para inverter');
+    const from = $('src').value; $('src').value = $('dst').value; $('dst').value = from;
+    if (result) { $('input').value = result; updateCount(); setResult(''); }
+  };
+  function setResult(text) {
+    result = text; $('output').textContent = text;
+    $('output').dataset.empty = text ? '' : '1';
+    if (!text) $('output').innerHTML = '<span class="muted" style="font:.875rem Inter,sans-serif">A tradução aparece aqui.</span>';
+  }
+  setResult('');
+
+  /* Divide o texto em blocos de até MAX_BYTES, respeitando linhas e frases */
+  const bytes = s => new TextEncoder().encode(s).length;
+  function chunk(text) {
+    const out = [];
+    for (const line of text.split('\n')) {
+      if (!line.trim()) { out.push(null); continue; } // linha em branco
+      const parts = line.match(/[^.!?。！？]+[.!?。！？]*\s*/g) || [line];
+      let cur = '';
+      const flush = () => { if (cur.trim()) out.push(cur.trim()); cur = ''; };
+      for (let p of parts) {
+        while (bytes(p) > MAX_BYTES) { // frase gigante: corta por palavras
+          let cut = p.slice(0, MAX_BYTES), sp = cut.lastIndexOf(' ');
+          cut = sp > 50 ? cut.slice(0, sp) : cut;
+          while (bytes(cut) > MAX_BYTES) cut = cut.slice(0, -1);
+          flush(); out.push(cut.trim()); p = p.slice(cut.length);
+        }
+        if (bytes(cur + p) > MAX_BYTES) flush();
+        cur += p;
+      }
+      flush(); out.push('\n');
+    }
+    return out;
+  }
+
+  const decode = s => new DOMParser().parseFromString(s, 'text/html').documentElement.textContent;
+
+  const run = { skipMyMemory: false, used: '' };
+  const gCode = c => c === 'Autodetect' ? 'auto' : c === 'zh-CN' ? 'zh-CN' : c.split('-')[0];
+
+  async function viaMyMemory(q, from, to) {
+    const params = new URLSearchParams({ q, langpair: `${from}|${to}` });
+    const email = store.get('gl_email'); if (email) params.set('de', email);
+    const res = await fetch(`${API}?${params}`);
+    if (!res.ok) throw new Error(`MyMemory indisponível (${res.status})`);
+    const data = await res.json();
+    const status = Number(data.responseStatus);
+    const text = data.responseData?.translatedText || '';
+    if (status === 429 || /MYMEMORY WARNING/i.test(text)) throw new Error('Limite diário do MyMemory atingido');
+    if (status !== 200) throw new Error(data.responseDetails || 'MyMemory não conseguiu traduzir');
+    return decode(text);
+  }
+
+  // Reserva: endpoint público do Google Tradutor (não oficial, sem chave)
+  async function viaGoogle(q, from, to) {
+    const params = new URLSearchParams({ client: 'gtx', sl: gCode(from), tl: gCode(to), dt: 't', q });
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?${params}`);
+    if (!res.ok) throw new Error(`Google Tradutor indisponível (${res.status})`);
+    const data = await res.json();
+    return data[0].map(seg => seg[0]).join('');
+  }
+
+  async function translateChunk(q, from, to) {
+    if (!run.skipMyMemory) {
+      try { const t = await viaMyMemory(q, from, to); run.used = run.used || 'MyMemory'; return t; }
+      catch (e) { run.skipMyMemory = true; run.why = e.message; }
+    }
+    run.used = 'Google Tradutor';
+    return viaGoogle(q, from, to);
+  }
+
+  $('runBtn').onclick = async () => {
+    const text = $('input').value.trim();
+    if (!text) return toast('Digite ou cole um texto primeiro');
+    const from = $('src').value, to = $('dst').value;
+    if (from === to) return toast('Escolha idiomas diferentes');
+    run.skipMyMemory = false; run.used = ''; run.why = '';
+    const btn = $('runBtn'), label = btn.querySelector('span');
+    btn.disabled = true;
+    try {
+      const blocks = chunk(text), real = blocks.filter(b => b && b !== '\n');
+      const done = new Map(); let n = 0;
+      // até 3 pedidos em paralelo
+      const queue = real.map((b, i) => [i, b]);
+      await Promise.all(Array.from({ length: 3 }, async () => {
+        while (queue.length) {
+          const [i, b] = queue.shift();
+          done.set(i, await translateChunk(b, from, to));
+          label.textContent = `Traduzindo ${++n}/${real.length}…`;
+        }
+      }));
+      let i = 0, out = '', prevText = false;
+      for (const b of blocks) {
+        if (b === null) { out += '\n'; prevText = false; }
+        else if (b === '\n') { out += '\n'; prevText = false; }
+        else { out += (prevText ? ' ' : '') + done.get(i++); prevText = true; }
+      }
+      setResult(out.replace(/\n{3,}/g, '\n\n').trim());
+      $('status').textContent = `Traduzido via ${run.used}` + (run.why && run.used !== 'MyMemory' ? ` (${run.why})` : '');
+    } catch (e) {
+      console.error(e);
+      const net = /Failed to fetch|NetworkError|Load failed/i.test(e.message);
+      $('status').textContent = net ? 'Bloqueado: esta página não consegue acessar a internet' : e.message;
+      toast(net ? 'Sem acesso à rede. Salve como .html e abra direto no navegador.' : e.message);
+    } finally { btn.disabled = false; label.textContent = 'Traduzir'; }
+  };
+
+  /* Ações */
+  $('copyBtn').onclick = async () => {
+    if (!result) return toast('Nada para copiar ainda');
+    try { await navigator.clipboard.writeText(result); }
+    catch { const t = document.createElement('textarea'); t.value = result; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); }
+    toast('Tradução copiada');
+  };
+  $('dlBtn').onclick = () => {
+    if (!result) return toast('Nada para baixar ainda');
+    const md = `# Tradução (${labelOf($('src'))} → ${labelOf($('dst'))})\n\n## Original\n\n${$('input').value.trim()}\n\n## Tradução\n\n${result}\n`;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown' }));
+    a.download = `traducao-${Date.now()}.md`; a.click(); URL.revokeObjectURL(a.href);
+    toast('Arquivo .md baixado');
+  };
+  $('ttsBtn').onclick = () => {
+    if (!result) return toast('Nada para ler ainda');
+    if (!('speechSynthesis' in window)) return toast('Seu navegador não suporta leitura em voz alta');
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(result); u.lang = $('dst').value;
+    speechSynthesis.speak(u);
+  };
+
+  updateCount();
+})();
+</script>
+</body>
+</html>

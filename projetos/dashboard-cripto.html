@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Cripto</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0b0f1a;--card:#131a2b;--line:#222c45;--tx:#e8ecf6;--mut:#8590ad;--up:#22c55e;--down:#ef4444;--acc:#6366f1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding:20px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:20px}
+h1{font-size:22px;margin:0}
+.live{display:inline-flex;align-items:center;gap:6px;color:var(--mut);font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--up);animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.3}}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap}
+select,input{background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit}
+.grid{display:grid;gap:16px}
+.top{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px}
+.main{grid-template-columns:2fr 1fr;margin-bottom:16px}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-size:13px;color:var(--mut);margin:0 0 12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.big{font-size:22px;font-weight:700}
+.row{display:flex;align-items:center;gap:8px}
+.up{color:var(--up)}.down{color:var(--down)}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{background:none;border:1px solid var(--line);color:var(--mut);border-radius:6px;padding:4px 10px;cursor:pointer}
+.tabs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.chart{height:300px;position:relative}
+.fx{max-height:360px;overflow:auto}
+.fx div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mut);font-weight:600;font-size:12px}
+th:nth-child(-n+2),td:nth-child(-n+2){text-align:left}
+tbody tr{cursor:pointer}tbody tr:hover,tr.sel{background:#1a2340}
+img.ic{width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:8px}
+.err{background:#3b1219;border:1px solid var(--down);padding:10px 14px;border-radius:8px;margin-bottom:16px}
+.mut{color:var(--mut)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {useState,useEffect,useRef,useMemo}=React;
+const html=htm.bind(React.createElement);
+const CG="https://api.coingecko.com/api/v3";
+const BN="https://data-api.binance.vision/api/v3";
+const MOEDAS=["usd","brl","eur","gbp","jpy","ars"];
+const FX=[["BRL","🇧🇷","Real"],["EUR","🇪🇺","Euro"],["GBP","🇬🇧","Libra"],["JPY","🇯🇵","Iene"],["CNY","🇨🇳","Yuan"],["ARS","🇦🇷","Peso arg."],["CAD","🇨🇦","Dólar can."],["AUD","🇦🇺","Dólar aus."],["CHF","🇨🇭","Franco suíço"],["MXN","🇲🇽","Peso mex."],["INR","🇮🇳","Rupia"],["RUB","🇷🇺","Rublo"],["KRW","🇰🇷","Won"],["TRY","🇹🇷","Lira"],["ZAR","🇿🇦","Rand"]];
+const STABLES=["USDC","FDUSD","TUSD","USDP","DAI","EUR","BUSD","USDT","AEUR","XUSD","USD1"];
+const MSG="Não foi possível conectar às APIs. Se você abriu o arquivo dentro do chat do Claude, baixe-o e abra direto no navegador (Chrome/Edge/Firefox). Também verifique internet, VPN ou bloqueadores de anúncios. Nova tentativa em 30s.";
+const money=(v,c)=>v==null||isNaN(v)?"—":new Intl.NumberFormat("pt-BR",{style:"currency",currency:c.toUpperCase(),maximumFractionDigits:v<1?6:2}).format(v);
+const compact=(v,c)=>v==null||isNaN(v)?"—":new Intl.NumberFormat("pt-BR",{style:"currency",currency:c.toUpperCase(),notation:"compact"}).format(v);
+const pct=v=>v==null?"—":(v>0?"+":"")+Number(v).toFixed(2).replace(".",",")+"%";
+
+async function getJSON(url){
+  const c=new AbortController(),t=setTimeout(()=>c.abort(),12000);
+  try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error("HTTP "+r.status);return await r.json()}
+  finally{clearTimeout(t)}
+}
+async function fetchFx(){
+  try{const d=await getJSON("https://open.er-api.com/v6/latest/USD");if(d.rates)return d.rates}catch(e){}
+  const d=await getJSON("https://api.frankfurter.app/latest?from=USD");
+  return {USD:1,...d.rates};
+}
+async function fetchMarkets(vs){
+  try{
+    const d=await getJSON(`${CG}/coins/markets?vs_currency=${vs}&order=market_cap_desc&per_page=50&sparkline=true&price_change_percentage=24h`);
+    return {coins:d.map(c=>({...c,src:"cg"})),src:"CoinGecko"};
+  }catch(e){
+    const [t,fx]=await Promise.all([getJSON(BN+"/ticker/24hr"),vs==="usd"?Promise.resolve({}):fetchFx()]);
+    const r=vs==="usd"?1:(fx[vs.toUpperCase()]||1);
+    const coins=t.filter(x=>x.symbol.endsWith("USDT")).map(x=>({b:x.symbol.slice(0,-4),x}))
+      .filter(({b})=>!STABLES.includes(b)&&!/(UP|DOWN)$/.test(b))
+      .sort((a,b)=>b.x.quoteVolume-a.x.quoteVolume).slice(0,50)
+      .map(({b,x},i)=>({id:b.toLowerCase(),name:b,symbol:b.toLowerCase(),image:null,market_cap_rank:i+1,market_cap:null,
+        current_price:+x.lastPrice*r,price_change_percentage_24h:+x.priceChangePercent,high_24h:+x.highPrice*r,low_24h:+x.lowPrice*r,
+        total_volume:+x.quoteVolume*r,sparkline_in_7d:null,src:"bn"}));
+    return {coins,src:"Binance (alternativa)"};
+  }
+}
+async function fetchHistory(coin,vs,days){
+  try{
+    if(coin.src==="bn")throw 0;
+    return (await getJSON(`${CG}/coins/${coin.id}/market_chart?vs_currency=${vs}&days=${days}`)).prices;
+  }catch(e){
+    const [iv,lim]={1:["15m",96],7:["1h",168],30:["4h",180],90:["1d",90],365:["1d",365]}[days];
+    const [k,fx]=await Promise.all([getJSON(`${BN}/klines?symbol=${coin.symbol.toUpperCase()}USDT&interval=${iv}&limit=${lim}`),vs==="usd"?Promise.resolve({}):fetchFx()]);
+    const r=vs==="usd"?1:(fx[vs.toUpperCase()]||1);
+    return k.map(x=>[x[0],+x[4]*r]);
+  }
+}
+
+const KR={BTC:"XBT",DOGE:"XDG"};
+const SRC=[
+ ["CoinGecko",async c=>{if(c.src!=="cg")throw 0;const d=await getJSON(`${CG}/simple/price?ids=${c.id}&vs_currencies=usd`);return d[c.id].usd}],
+ ["Binance",async c=>+(await getJSON(`${BN}/ticker/price?symbol=${c.symbol.toUpperCase()}USDT`)).price],
+ ["Coinbase",async c=>+(await getJSON(`https://api.coinbase.com/v2/prices/${c.symbol.toUpperCase()}-USD/spot`)).data.amount],
+ ["Kraken",async c=>{const S=c.symbol.toUpperCase();const d=await getJSON(`https://api.kraken.com/0/public/Ticker?pair=${KR[S]||S}USD`);if(d.error&&d.error.length)throw 0;return +Object.values(d.result)[0].c[0]}]
+];
+function SourcesCard({coin,vs,fx}){
+  const [rows,setRows]=useState([]);
+  useEffect(()=>{
+    let off=false;
+    const run=()=>Promise.all(SRC.map(async([n,f])=>{const t=performance.now();try{const p=await f(coin);return{n,p,ms:Math.round(performance.now()-t)}}catch(e){return{n,p:null}}})).then(r=>!off&&setRows(r));
+    setRows([]);run();const t=setInterval(run,30000);return()=>{off=true;clearInterval(t)};
+  },[coin.symbol,coin.src]);
+  const r=vs==="usd"?1:(fx&&fx[vs.toUpperCase()]);
+  return html`<div className="card" style=${{marginBottom:16}}>
+    <h2>Preço de ${coin.name} por fonte (APIs diferentes)</h2>
+    <div className="grid" style=${{gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))"}}>
+      ${!rows.length?html`<span className="mut">Consultando APIs…</span>`:rows.map(x=>html`<div key=${x.n} style=${{border:"1px solid var(--line)",borderRadius:8,padding:"10px 12px"}}>
+        <div className="row"><span className=${x.p!=null?"up":"down"}>●</span><b>${x.n}</b><span className="mut" style=${{marginLeft:"auto",fontSize:12}}>${x.p!=null?x.ms+" ms":"indisponível"}</span></div>
+        <div style=${{fontSize:18,fontWeight:700,marginTop:4}}>${x.p!=null&&r?money(x.p*r,vs):"—"}</div>
+      </div>`)}
+    </div></div>`;
+}
+const COLS=["#f7931a","#627eea","#14f195","#f3ba2f","#e84142"];
+function CompareChart({coins,vs,days}){
+  const ref=useRef(),chart=useRef(),[err,setErr]=useState(null);
+  const key=coins.map(c=>c.symbol+c.src).join();
+  useEffect(()=>{
+    let off=false;setErr(null);
+    if(!coins.length){chart.current&&chart.current.destroy();chart.current=null;return}
+    Promise.all(coins.map(c=>fetchHistory(c,vs,days).catch(()=>null))).then(res=>{
+      if(off)return;
+      const ok=res.map((p,i)=>p&&p.length>1?{c:coins[i],p}:null).filter(Boolean);
+      if(!ok.length){setErr("Não foi possível carregar o histórico agora.");return}
+      const N=100,rs=p=>Array.from({length:N},(_,i)=>p[Math.round(i*(p.length-1)/(N-1))]);
+      const fmt=t=>new Date(t).toLocaleString("pt-BR",days<=1?{hour:"2-digit",minute:"2-digit"}:{day:"2-digit",month:"short"});
+      chart.current&&chart.current.destroy();
+      chart.current=new Chart(ref.current,{type:"line",
+        data:{labels:rs(ok[0].p).map(x=>fmt(x[0])),datasets:ok.map((o,i)=>{const s=rs(o.p);return{label:o.c.symbol.toUpperCase(),data:s.map(x=>(x[1]/s[0][1]-1)*100),borderColor:COLS[i%5],pointRadius:0,tension:.3,borderWidth:2}})},
+        options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"index"},
+          plugins:{legend:{labels:{color:"#e8ecf6"}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+pct(c.parsed.y)}}},
+          scales:{x:{ticks:{color:"#8590ad",maxTicksLimit:7},grid:{display:false}},y:{ticks:{color:"#8590ad",callback:v=>v+"%"},grid:{color:"#222c45"}}}}});
+    });
+    return()=>{off=true};
+  },[key,vs,days]);
+  useEffect(()=>()=>chart.current&&chart.current.destroy(),[]);
+  return html`<div className="chart">${!coins.length?html`<div className="mut">Marque moedas na coluna “Comparar” da tabela (até 5).</div>`:null}${err?html`<div className="mut">${err}</div>`:null}<canvas ref=${ref}></canvas></div>`;
+}
+
+const FXMAIN=["USD","EUR","GBP","JPY","CNY","ARS","CAD","CHF"];
+const dn=(()=>{try{return new Intl.DisplayNames(["pt-BR"],{type:"currency"})}catch(e){return null}})();
+const cname=c=>{try{return dn?dn.of(c):c}catch(e){return c}};
+const flag=c=>c==="EUR"?"🇪🇺":c==="USD"?"🇺🇸":/^X/.test(c)?"🌐":String.fromCodePoint(...c.slice(0,2).split("").map(ch=>127397+ch.charCodeAt(0)));
+const xr=(fx,a,b)=>fx[a]&&fx[b]?fx[b]/fx[a]:null;
+const nf=v=>v==null?"—":v.toLocaleString("pt-BR",{maximumFractionDigits:v>=100?2:v>=1?4:6});
+
+function FxChart({from,to,days}){
+  const ref=useRef(),chart=useRef(),[err,setErr]=useState(null);
+  useEffect(()=>{
+    let off=false;setErr(null);
+    const iso=d=>d.toISOString().slice(0,10);
+    getJSON(`https://api.frankfurter.app/${iso(new Date(Date.now()-days*864e5))}..${iso(new Date())}?from=${from}&to=${to}`).then(d=>{
+      if(off)return;
+      const ks=Object.keys(d.rates).sort();
+      chart.current&&chart.current.destroy();
+      chart.current=new Chart(ref.current,{type:"line",
+        data:{labels:ks.map(k=>k.split("-").reverse().slice(0,2).join("/")),datasets:[{data:ks.map(k=>d.rates[k][to]),borderColor:"#6366f1",backgroundColor:"#6366f122",fill:true,pointRadius:0,tension:.3,borderWidth:2}]},
+        options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"index"},
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"1 "+from+" = "+nf(c.parsed.y)+" "+to}}},
+          scales:{x:{ticks:{color:"#8590ad",maxTicksLimit:7},grid:{display:false}},y:{ticks:{color:"#8590ad"},grid:{color:"#222c45"}}}}});
+    }).catch(()=>{if(!off){chart.current&&chart.current.destroy();chart.current=null;setErr("Histórico indisponível para o par "+from+"/"+to+" (a fonte histórica cobre cerca de 30 moedas principais).")}});
+    return()=>{off=true};
+  },[from,to,days]);
+  useEffect(()=>()=>chart.current&&chart.current.destroy(),[]);
+  return html`<div className="chart" style=${{height:240}}>${err?html`<div className="mut">${err}</div>`:null}<canvas ref=${ref}></canvas></div>`;
+}
+
+function FxSection({fx}){
+  const codes=useMemo(()=>Object.keys(fx).sort(),[fx]);
+  const [base,setBase]=useState("BRL"),[q,setQ]=useState(""),[sel,setSel]=useState("USD"),[days,setDays]=useState(30),
+        [amt,setAmt]=useState("100"),[cf,setCf]=useState("USD"),[ct,setCt]=useState("BRL");
+  const names=useMemo(()=>Object.fromEntries(codes.map(c=>[c,cname(c)])),[codes]);
+  const list=useMemo(()=>{
+    const s=q.toLowerCase().trim();
+    return codes.filter(c=>c!==base&&(!s||c.toLowerCase().includes(s)||names[c].toLowerCase().includes(s)));
+  },[codes,q,base,names]);
+  const from=sel===base?(base==="USD"?"EUR":"USD"):sel;
+  const conv=(parseFloat(String(amt).replace(",","."))||0)*(xr(fx,cf,ct)||0);
+  const opts=codes.map(c=>html`<option key=${c} value=${c}>${c} — ${names[c]}</option>`);
+  return html`<div className="card" style=${{marginBottom:16}}>
+    <div className="row" style=${{flexWrap:"wrap",justifyContent:"space-between",marginBottom:12}}>
+      <h2 style=${{margin:0}}>💱 Câmbio mundial · ${codes.length} moedas</h2>
+      <div className="ctrl">
+        <span className="mut" style=${{alignSelf:"center"}}>Moeda base:</span>
+        <select value=${base} onChange=${e=>setBase(e.target.value)}>${opts}</select>
+        <input placeholder="Buscar moeda (código ou nome)…" value=${q} onInput=${e=>setQ(e.target.value)} style=${{minWidth:230}}/>
+      </div>
+    </div>
+    <div className="grid top" style=${{gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",marginBottom:16}}>
+      ${FXMAIN.filter(c=>c!==base&&fx[c]).map(c=>html`<div key=${c} onClick=${()=>setSel(c)} style=${{cursor:"pointer",border:"1px solid "+(c===from?"var(--acc)":"var(--line)"),borderRadius:10,padding:"10px 12px"}}>
+        <div className="mut">${flag(c)} 1 ${c}</div><div className="big" style=${{fontSize:18}}>${nf(xr(fx,c,base))} <span className="mut" style=${{fontSize:12}}>${base}</span></div></div>`)}
+    </div>
+    <div className="grid main" style=${{marginBottom:0}}>
+      <div style=${{minWidth:0}}>
+        <div className="tabs"><span className="mut" style=${{alignSelf:"center",marginRight:6}}>${flag(from)} ${from} → ${flag(base)} ${base}</span>
+          ${[[7,"7d"],[30,"30d"],[90,"90d"],[365,"1a"]].map(([d,l])=>html`<button key=${d} className=${days===d?"on":""} onClick=${()=>setDays(d)}>${l}</button>`)}</div>
+        <${FxChart} from=${from} to=${base} days=${days} />
+        <h2 style=${{marginTop:16}}>Conversor</h2>
+        <div className="ctrl">
+          <input value=${amt} onInput=${e=>setAmt(e.target.value)} style=${{width:110}} inputMode="decimal"/>
+          <select value=${cf} onChange=${e=>setCf(e.target.value)}>${opts}</select>
+          <button onClick=${()=>{setCf(ct);setCt(cf)}} style=${{background:"var(--card)",color:"var(--tx)",border:"1px solid var(--line)",borderRadius:8,cursor:"pointer"}}>⇄</button>
+          <select value=${ct} onChange=${e=>setCt(e.target.value)}>${opts}</select>
+        </div>
+        <div className="big" style=${{marginTop:10}}>${nf(conv)} <span className="mut">${ct}</span></div>
+      </div>
+      <div className="fx" style=${{maxHeight:470}}>
+        ${list.length?list.map(c=>html`<div key=${c} onClick=${()=>setSel(c)} style=${{cursor:"pointer",background:c===from?"#1a2340":"none"}} title=${"1 "+base+" = "+nf(xr(fx,base,c))+" "+c}>
+          <span>${flag(c)} <b>${c}</b> <span className="mut">${names[c]}</span></span><b>${nf(xr(fx,c,base))}</b></div>`):html`<span className="mut">Nenhuma moeda encontrada.</span>`}
+      </div>
+    </div>
+    <p className="mut" style=${{margin:"10px 0 0",fontSize:12}}>Valores: 1 unidade de cada moeda da lista equivale a quanto da moeda base. Clique em uma moeda para ver o histórico.</p>
+  </div>`;
+}
+
+function Ic({c}){
+  return c.image?html`<img className="ic" src=${c.image}/>`
+    :html`<span className="ic" style=${{display:"inline-flex",alignItems:"center",justifyContent:"center",background:"#6366f1",fontSize:11,fontWeight:700,color:"#fff"}}>${c.symbol[0].toUpperCase()}</span>`;
+}
+function Spark({data}){
+  if(!data||!data.length)return html`<span className="mut">—</span>`;
+  const up=data[data.length-1]>=data[0],mn=Math.min(...data),mx=Math.max(...data),w=110,h=34;
+  const pts=data.filter((_,i)=>i%4===0).map((v,i,a)=>`${(i/(a.length-1))*w},${h-((v-mn)/(mx-mn||1))*h}`).join(" ");
+  return html`<svg width=${w} height=${h}><polyline points=${pts} fill="none" stroke=${up?"#22c55e":"#ef4444"} strokeWidth="1.5"/></svg>`;
+}
+
+function PriceChart({coin,vs,days}){
+  const ref=useRef(),chart=useRef(),[err,setErr]=useState(null);
+  useEffect(()=>{
+    let off=false;setErr(null);
+    fetchHistory(coin,vs,days).then(p=>{
+      if(off)return;
+      const up=p[p.length-1][1]>=p[0][1],col=up?"#22c55e":"#ef4444";
+      const fmt=t=>new Date(t).toLocaleString("pt-BR",days<=1?{hour:"2-digit",minute:"2-digit"}:{day:"2-digit",month:"short"});
+      chart.current&&chart.current.destroy();
+      chart.current=new Chart(ref.current,{type:"line",
+        data:{labels:p.map(x=>fmt(x[0])),datasets:[{data:p.map(x=>x[1]),borderColor:col,backgroundColor:col+"22",fill:true,pointRadius:0,tension:.3,borderWidth:2}]},
+        options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"index"},
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>money(c.parsed.y,vs)}}},
+          scales:{x:{ticks:{color:"#8590ad",maxTicksLimit:7},grid:{display:false}},y:{ticks:{color:"#8590ad",callback:v=>compact(v,vs)},grid:{color:"#222c45"}}}}});
+    }).catch(()=>!off&&setErr("Não foi possível carregar o histórico desta moeda agora."));
+    return()=>{off=true};
+  },[coin.symbol,coin.src,vs,days]);
+  useEffect(()=>()=>chart.current&&chart.current.destroy(),[]);
+  return html`<div className="chart">${err?html`<div className="mut">${err}</div>`:null}<canvas ref=${ref}></canvas></div>`;
+}
+
+function App(){
+  const [vs,setVs]=useState("brl"),[coins,setCoins]=useState([]),[sel,setSel]=useState("btc"),
+        [days,setDays]=useState(7),[q,setQ]=useState(""),[fx,setFx]=useState(null),
+        [upd,setUpd]=useState(null),[err,setErr]=useState(null),[src,setSrc]=useState(""),[mode,setMode]=useState("single"),[cmp,setCmp]=useState(["btc","eth","sol","bnb"]);
+
+  useEffect(()=>{
+    let off=false;
+    const load=()=>fetchMarkets(vs).then(r=>{if(!off){setCoins(r.coins);setSrc(r.src);setUpd(new Date());setErr(null)}}).catch(()=>!off&&setErr(MSG));
+    load();const t=setInterval(load,30000);
+    return()=>{off=true;clearInterval(t)};
+  },[vs]);
+
+  useEffect(()=>{
+    const load=()=>fetchFx().then(setFx).catch(()=>{});
+    load();const t=setInterval(load,60000);return()=>clearInterval(t);
+  },[]);
+
+  const list=useMemo(()=>coins.filter(c=>(c.name+c.symbol).toLowerCase().includes(q.toLowerCase())),[coins,q]);
+  const cur=coins.find(c=>c.symbol===sel)||coins[0];
+  const destaque=["btc","eth","bnb","sol","xrp","ada","doge","avax"].map(s=>coins.find(c=>c.symbol===s)).filter(Boolean);
+  const base=fx&&fx[vs.toUpperCase()];
+  const cmpCoins=cmp.map(x=>coins.find(c=>c.symbol===x)).filter(Boolean);
+  const toggle=x=>{setCmp(a=>a.includes(x)?a.filter(y=>y!==x):a.length>=5?a:[...a,x]);setMode("cmp")};
+
+  return html`<div className="wrap">
+    <header>
+      <div><h1>📈 Dashboard Cripto</h1>
+        <span className="live"><span className="dot"></span>Tempo real · atualiza a cada 30s${upd?" · última: "+upd.toLocaleTimeString("pt-BR"):""}</span></div>
+      <div className="ctrl">
+        <input placeholder="Buscar moeda…" value=${q} onInput=${e=>setQ(e.target.value)} />
+        <select value=${vs} onChange=${e=>setVs(e.target.value)}>
+          ${MOEDAS.map(m=>html`<option key=${m} value=${m}>${m.toUpperCase()}</option>`)}
+        </select>
+      </div>
+    </header>
+    ${err?html`<div className="err">${err}</div>`:null}
+
+    <div className="grid top">
+      ${destaque.map(c=>html`<div key=${c.id} className="card" onClick=${()=>setSel(c.symbol)} style=${{cursor:"pointer"}}>
+        <h2><${Ic} c=${c}/>${c.name}</h2>
+        <div className="big">${money(c.current_price,vs)}</div>
+        <div className=${c.price_change_percentage_24h>=0?"up":"down"}>${pct(c.price_change_percentage_24h)} <span className="mut">24h</span></div>
+      </div>`)}
+    </div>
+
+    <div className="grid main">
+      <div className="card">
+        <h2>${mode==="single"?"Histórico · "+(cur?cur.name:"…"):"Comparação de variação (%)"} (${vs.toUpperCase()})</h2>
+        <div className="tabs"><button className=${mode==="single"?"on":""} onClick=${()=>setMode("single")}>Preço</button><button className=${mode==="cmp"?"on":""} onClick=${()=>setMode("cmp")}>Comparar moedas</button><span style=${{width:12}}></span>${[[1,"24h"],[7,"7d"],[30,"30d"],[90,"90d"],[365,"1a"]].map(([d,l])=>
+          html`<button key=${d} className=${days===d?"on":""} onClick=${()=>setDays(d)}>${l}</button>`)}</div>
+        ${mode==="cmp"?html`<${CompareChart} coins=${cmpCoins} vs=${vs} days=${days} />`:cur?html`<${PriceChart} coin=${cur} vs=${vs} days=${days} />`:html`<div className="mut">Carregando…</div>`}
+      </div>
+      <div className="card">
+        <h2>Moedas do mundo · 1 ${vs.toUpperCase()} =</h2>
+        <div className="fx">${!fx||!base?html`<span className="mut">Carregando…</span>`:FX.filter(f=>f[0]!==vs.toUpperCase()).map(([c,flag,n])=>
+          html`<div key=${c}><span>${flag} ${c} <span className="mut">${n}</span></span><b>${fx[c]?(fx[c]/base).toLocaleString("pt-BR",{maximumFractionDigits:4}):"—"}</b></div>`)}</div>
+      </div>
+    </div>
+
+    ${cur?html`<${SourcesCard} coin=${cur} vs=${vs} fx=${fx} />`:null}
+    ${fx?html`<${FxSection} fx=${fx} />`:null}
+
+    <div className="card">
+      <h2>Top 50 criptomoedas</h2>
+      <div className="tw"><table>
+        <thead><tr><th>#</th><th>Moeda</th><th>Preço</th><th>24h</th><th>Máx. 24h</th><th>Mín. 24h</th><th>Cap. de mercado</th><th>Volume 24h</th><th>7 dias</th><th>Comparar</th></tr></thead>
+        <tbody>${list.map(c=>html`<tr key=${c.id} className=${cur&&c.id===cur.id?"sel":""} onClick=${()=>{setSel(c.symbol);window.scrollTo({top:0,behavior:"smooth"})}}>
+          <td className="mut">${c.market_cap_rank}</td>
+          <td><${Ic} c=${c}/>${c.name} <span className="mut">${c.symbol.toUpperCase()}</span></td>
+          <td><b>${money(c.current_price,vs)}</b></td>
+          <td className=${c.price_change_percentage_24h>=0?"up":"down"}>${pct(c.price_change_percentage_24h)}</td>
+          <td>${money(c.high_24h,vs)}</td><td>${money(c.low_24h,vs)}</td>
+          <td>${compact(c.market_cap,vs)}</td><td>${compact(c.total_volume,vs)}</td>
+          <td><${Spark} data=${c.sparkline_in_7d&&c.sparkline_in_7d.price} /></td>
+          <td onClick=${e=>e.stopPropagation()}><input type="checkbox" checked=${cmp.includes(c.symbol)} onChange=${()=>toggle(c.symbol)} /></td>
+        </tr>`)}</tbody>
+      </table></div>
+    </div>
+    <p className="mut" style=${{textAlign:"center",marginTop:16}}>Fontes: ${src||"—"} · Binance · Coinbase · Kraken · Câmbio: ExchangeRate-API</p>
+  </div>`;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
